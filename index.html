@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trung Tâm Dạy Thêm</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--do:#7a1a1a;--do2:#9c2b2b;--bg:#faf6f6;--card:#fff;--fg:#2b2b2b;--muted:#8a7f7f;--line:#eadfdf;--green:#1e8e3e;--red:#d93025;--amber:#e8710a}
+body{font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--fg);font-size:15px}
+/* ===== header ===== */
+.topbar{background:linear-gradient(135deg,var(--do),var(--do2));color:#fff;padding:14px 16px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px}
+.topbar .logo{width:38px;height:38px;border-radius:10px;background:#fff;color:var(--do);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.topbar h1{font-size:18px}
+.topbar .sub{font-size:12px;opacity:.85}
+.demo-banner{background:#fff3cd;color:#856404;text-align:center;font-size:13px;padding:6px;display:none}
+/* ===== layout ===== */
+.layout{display:flex;min-height:calc(100vh - 66px)}
+.sidebar{width:210px;background:#fff;border-right:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:4px}
+.navbtn{display:flex;align-items:center;gap:10px;padding:11px 12px;border:0;background:none;border-radius:10px;font-size:15px;color:var(--fg);cursor:pointer;text-align:left;width:100%}
+.navbtn .ic{font-size:18px;width:24px;text-align:center}
+.navbtn.active{background:#f7e8e8;color:var(--do);font-weight:600}
+main{flex:1;padding:16px;max-width:1100px}
+.view h2{font-size:20px;margin-bottom:12px;color:var(--do)}
+/* ===== cards & panel ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card .lb{font-size:13px;color:var(--muted);margin-bottom:6px}
+.card .vl{font-size:24px;font-weight:700;color:var(--do)}
+.card .sm{font-size:12px;color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
+.panel h3{font-size:16px;margin-bottom:10px}
+/* ===== form ===== */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:15px;width:100%;background:#fff;color:var(--fg)}
+input:focus,select:focus{outline:2px solid #e7bcbc;border-color:var(--do)}
+.fld{flex:1;min-width:140px}
+/* ===== buttons ===== */
+.btn{background:linear-gradient(135deg,var(--do),var(--do2));color:#fff;border:0;border-radius:10px;padding:11px 18px;font-size:15px;font-weight:600;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn-ghost{background:#fff;color:var(--do);border:1px solid var(--do);border-radius:10px;padding:10px 16px;font-size:15px;cursor:pointer}
+.btn-block{width:100%;margin-top:12px}
+/* ===== điểm danh ===== */
+.stu{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;background:#fff}
+.stu .nm{font-weight:600;margin-bottom:8px}
+.toggles{display:flex;gap:6px}
+.tg{flex:1;border:1px solid var(--line);background:#f7f4f4;border-radius:8px;padding:8px;font-size:13px;cursor:pointer;color:var(--muted)}
+.tg.on-co{background:#e6f4ea;border-color:var(--green);color:var(--green);font-weight:700}
+.tg.on-vang{background:#fce8e6;border-color:var(--red);color:var(--red);font-weight:700}
+.tg.on-nghi{background:#fef7e0;border-color:var(--amber);color:var(--amber);font-weight:700}
+.stu input.note{margin-top:8px;font-size:13px;padding:7px 9px}
+/* ===== bảng học phí ===== */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-size:13px;font-weight:600}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.b-dong{background:#e6f4ea;color:var(--green)}
+.b-chua{background:#fce8e6;color:var(--red)}
+.mini{background:#fff;border:1px solid var(--do);color:var(--do);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+/* ===== lịch học ===== */
+.sched{overflow-x:auto}
+.sched-grid{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:8px;min-width:1020px}
+.daycol{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;min-height:120px}
+.daycol.today{border:2px solid var(--do)}
+.daycol .dh{font-weight:700;font-size:13px;color:var(--do);margin-bottom:8px;text-align:center}
+.ev{background:#f7e8e8;border-left:4px solid var(--do);border-radius:6px;padding:6px 8px;margin-bottom:6px;font-size:12px}
+.ev b{display:block;font-size:13px}
+.ev span{color:var(--muted)}
+/* ===== danh sách học viên ===== */
+.srow{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line)}
+.srow .av{width:38px;height:38px;border-radius:50%;background:#f0d9d9;color:var(--do);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.srow .inf{flex:1}
+.srow .inf b{display:block}
+.srow .inf span{font-size:13px;color:var(--muted)}
+/* ===== bottom nav (mobile) ===== */
+.bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:50}
+.bottomnav .navbtn{flex-direction:column;gap:2px;font-size:11px;padding:8px 4px;align-items:center;justify-content:center;border-radius:0}
+.bottomnav .navbtn .ic{font-size:20px}
+/* ===== modal / toast / loading ===== */
+.modal{position:fixed;inset:0;z-index:100;display:none}
+.modal.open{display:block}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.modal-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:18px;width:calc(100% - 40px);max-width:420px;max-height:85vh;overflow:auto}
+.modal-box h3{color:var(--do);margin-bottom:12px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:#323232;color:#fff;padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading{position:fixed;inset:0;background:rgba(255,255,255,.7);display:none;align-items:center;justify-content:center;z-index:300}
+.loading.open{display:flex}
+.spin{width:40px;height:40px;border:4px solid #e8c9c9;border-top-color:var(--do);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{color:var(--muted);text-align:center;padding:24px;font-size:14px}
+@media(max-width:899px){
+  .sidebar{display:none}
+  .bottomnav{display:flex}
+  main{padding:12px 12px 80px}
+  .topbar h1{font-size:16px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">TT</div>
+  <div><h1>Trung Tâm Dạy Thêm</h1><div class="sub">Quản lý điểm danh · học phí · lịch học</div></div>
+</header>
+<div class="demo-banner" id="demoBanner">Chế độ DEMO — dữ liệu mẫu, chưa kết nối server thật</div>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main><div class="view" id="view"></div></main>
+</div>
+<nav class="bottomnav" id="bottomnav"></nav>
+<div class="modal" id="modal"><div class="modal-bg" id="modalBg"></div><div class="modal-box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+<div class="loading" id="loading"><div class="spin"></div></div>
+<script>
+/* =====================================================================
+ * Frontend demo "Quản lý trung tâm dạy thêm"
+ * - ĐẦU FILE: thay API_URL bằng URL /exec thật sau khi deploy Apps Script.
+ * - Khi API_URL còn là placeholder -> tự bật DEMO_MODE (dữ liệu mẫu local).
+ * ===================================================================== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyMIPBTncWS9QLPk_19TGCskTO15I7sUYQFZIpr25dhL2Ka30g_FjQWVR3lUAtUv0SrTg/exec';
+const DEMO_MODE = API_URL.indexOf('___') >= 0;
+
+/* ---------------- tiện ích chung ---------------- */
+const $ = id => document.getElementById(id);
+// chống XSS: escape mọi dữ liệu render ra HTML
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// 1200000 -> "1.200.000"
+const money = n => String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const pad2 = n => ('0' + n).slice(-2);
+const fmtDate = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+const todayStr = () => fmtDate(new Date());
+const curMonth = () => todayStr().slice(0, 7); // yyyy-MM
+// 'Thứ 2'..'Chủ nhật' -> 2..8 (thang chung để so với "hôm nay")
+const THU_MAP = {'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'Chủ nhật':8};
+const THU_LIST = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+const todayNum = () => { const g = new Date().getDay(); return g === 0 ? 8 : g + 1; };
+
+let toastT = null;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function showLoading(on) { $('loading').classList.toggle('open', !!on); }
+function openModal(html) { $('modalBox').innerHTML = html; $('modal').classList.add('open'); }
+function closeModal() { $('modal').classList.remove('open'); }
+
+/* ---------------- dữ liệu mẫu (chế độ DEMO) ---------------- */
+function sampleData() {
+  const lopHoc = [
+    {maLop:'L01', tenLop:'Toán 9',   giaoVien:'Cô Lan',    phong:'P201', hocPhi:1200000, lichHoc:'Thứ 3, Thứ 5, Thứ 7'},
+    {maLop:'L02', tenLop:'Lý 11',    giaoVien:'Thầy Minh', phong:'P202', hocPhi:1500000, lichHoc:'Thứ 2, Thứ 4, Thứ 6'},
+    {maLop:'L03', tenLop:'Hóa 12',   giaoVien:'Cô Hương',  phong:'P201', hocPhi:1500000, lichHoc:'Thứ 3, Thứ 6'},
+    {maLop:'L04', tenLop:'Anh văn 8',giaoVien:'Thầy Tú',   phong:'P203', hocPhi:1000000, lichHoc:'Thứ 4, Chủ nhật'}
+  ];
+  const hocVien = [
+    {maHV:'HV001', hoTen:'Nguyễn Văn An',   sdt:'0901234501', maLop:'L01', ngaySinh:'2010-03-15', ghiChu:''},
+    {maHV:'HV002', hoTen:'Trần Thị Bích',   sdt:'0901234502', maLop:'L01', ngaySinh:'2010-07-22', ghiChu:''},
+    {maHV:'HV003', hoTen:'Phạm Minh Long',  sdt:'0901234503', maLop:'L01', ngaySinh:'2010-11-05', ghiChu:''},
+    {maHV:'HV004', hoTen:'Lê Ngọc Mai',     sdt:'0901234504', maLop:'L02', ngaySinh:'2008-02-18', ghiChu:''},
+    {maHV:'HV005', hoTen:'Hoàng Tuấn Huy',  sdt:'0901234505', maLop:'L02', ngaySinh:'2008-09-30', ghiChu:''},
+    {maHV:'HV006', hoTen:'Phan Thu Vân',    sdt:'0901234506', maLop:'L02', ngaySinh:'2008-05-12', ghiChu:''},
+    {maHV:'HV007', hoTen:'Đoàn Quang Huy',  sdt:'0901234507', maLop:'L03', ngaySinh:'2007-04-25', ghiChu:''},
+    {maHV:'HV008', hoTen:'Vũ Hải Yến',      sdt:'0901234508', maLop:'L03', ngaySinh:'2007-12-08', ghiChu:''},
+    {maHV:'HV009', hoTen:'Đặng Quốc Bảo',   sdt:'0901234509', maLop:'L03', ngaySinh:'2007-08-19', ghiChu:''},
+    {maHV:'HV010', hoTen:'Bùi Thanh Thảo',  sdt:'0901234510', maLop:'L04', ngaySinh:'2011-06-14', ghiChu:''},
+    {maHV:'HV011', hoTen:'Ngô Đức Anh',     sdt:'0901234511', maLop:'L04', ngaySinh:'2011-01-27', ghiChu:''},
+    {maHV:'HV012', hoTen:'Đinh Phương Linh',sdt:'0901234512', maLop:'L04', ngaySinh:'2011-10-03', ghiChu:''}
+  ];
+  const lichHoc = [
+    {maLop:'L01', thu:'Thứ 3', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P201', giaoVien:'Cô Lan'},
+    {maLop:'L01', thu:'Thứ 5', gioBatDau:'17:30', gioKetThuc:'19:00', phong:'P201', giaoVien:'Cô Lan'},
+    {maLop:'L01', thu:'Thứ 7', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P201', giaoVien:'Cô Lan'},
+    {maLop:'L02', thu:'Thứ 2', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P202', giaoVien:'Thầy Minh'},
+    {maLop:'L02', thu:'Thứ 4', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P202', giaoVien:'Thầy Minh'},
+    {maLop:'L02', thu:'Thứ 6', gioBatDau:'18:00', gioKetThuc:'19:30', phong:'P202', giaoVien:'Thầy Minh'},
+    {maLop:'L03', thu:'Thứ 3', gioBatDau:'17:30', gioKetThuc:'19:00', phong:'P201', giaoVien:'Cô Hương'},
+    {maLop:'L03', thu:'Thứ 6', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P201', giaoVien:'Cô Hương'},
+    {maLop:'L04', thu:'Thứ 4', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P203', giaoVien:'Thầy Tú'},
+    {maLop:'L04', thu:'Chủ nhật', gioBatDau:'17:00', gioKetThuc:'18:30', phong:'P203', giaoVien:'Thầy Tú'}
+  ];
+  const t = todayStr(), th = curMonth();
+  // điểm danh hôm nay cho lớp Toán 9: 3 có mặt
+  const diemDanh = [
+    {ngay:t, maLop:'L01', maHV:'HV001', trangThai:'Có mặt', ghiChu:''},
+    {ngay:t, maLop:'L01', maHV:'HV002', trangThai:'Có mặt', ghiChu:''},
+    {ngay:t, maLop:'L01', maHV:'HV003', trangThai:'Có mặt', ghiChu:''}
+  ];
+  // học phí tháng hiện tại: chẵn đã đóng, lẻ chưa đóng (nửa đóng nửa chưa)
+  const hocPhiLop = {L01:1200000, L02:1500000, L03:1500000, L04:1000000};
+  const hocPhi = hocVien.map((h, i) => {
+    const daDong = i % 2 === 0;
+    return {maHV:h.maHV, thang:th, soTien:hocPhiLop[h.maLop], trangThai: daDong ? 'Đã đóng' : 'Chưa đóng',
+      ngayDong: daDong ? t : '', hinhThuc: daDong ? (i % 4 === 0 ? 'Tiền mặt' : 'Chuyển khoản') : ''};
+  });
+  return {hocVien, lopHoc, diemDanh, hocPhi, lichHoc};
+}
+
+/* ---------------- API giả lập (chế độ DEMO) ---------------- */
+let DEMO_DB = null;
+function demoApi(fn, args) {
+  if (!DEMO_DB) DEMO_DB = sampleData();
+  const db = DEMO_DB;
+  // giả lập độ trễ mạng
+  return new Promise((res, rej) => setTimeout(() => {
+    try {
+      let data;
+      if (fn === 'getInitData') {
+        data = JSON.parse(JSON.stringify(db)); // deep-copy để UI không sửa thẳng DB
+      } else if (fn === 'saveStudent') {
+        const s = args[0] || {};
+        let ma = String(s.maHV || '').trim();
+        if (!ma) { // tự sinh HV001, HV002...
+          let mx = 0;
+          db.hocVien.forEach(h => { const m = /^HV(\d+)$/.exec(h.maHV); if (m) mx = Math.max(mx, +m[1]); });
+          ma = 'HV' + String(mx + 1).padStart(3, '0');
+        }
+        const row = {maHV:ma, hoTen:String(s.hoTen||''), sdt:String(s.sdt||''), maLop:String(s.maLop||''),
+          ngaySinh:String(s.ngaySinh||''), ghiChu:String(s.ghiChu||'')};
+        const i = db.hocVien.findIndex(h => h.maHV === ma);
+        if (i >= 0) db.hocVien[i] = row; else db.hocVien.push(row);
+        data = {maHV: ma};
+      } else if (fn === 'saveClass') {
+        const c = args[0] || {};
+        const ma = String(c.maLop || '').trim();
+        if (!ma) throw new Error('Thiếu mã lớp (maLop).');
+        const row = {maLop:ma, tenLop:String(c.tenLop||''), giaoVien:String(c.giaoVien||''),
+          phong:String(c.phong||''), hocPhi:+c.hocPhi || 0, lichHoc:String(c.lichHoc||'')};
+        const i = db.lopHoc.findIndex(x => x.maLop === ma);
+        if (i >= 0) db.lopHoc[i] = row; else db.lopHoc.push(row);
+        data = {maLop: ma};
+      } else if (fn === 'takeAttendance') {
+        const a = args[0] || {};
+        const ngay = String(a.ngay || ''), maLop = String(a.maLop || '');
+        if (!ngay || !maLop) throw new Error('Thiếu ngày hoặc mã lớp điểm danh.');
+        // xóa dòng cũ của đúng buổi này rồi ghi mới
+        db.diemDanh = db.diemDanh.filter(r => !(r.ngay === ngay && r.maLop === maLop));
+        let n = 0;
+        (a.records || []).forEach(rec => {
+          if (!String(rec.maHV || '')) return;
+          db.diemDanh.push({ngay, maLop, maHV:String(rec.maHV),
+            trangThai:String(rec.trangThai || 'Có mặt'), ghiChu:String(rec.ghiChu || '')});
+          n++;
+        });
+        data = {saved: n};
+      } else if (fn === 'collectTuition') {
+        const t = args[0] || {};
+        const maHV = String(t.maHV || ''), thang = String(t.thang || '');
+        if (!maHV || !thang) throw new Error('Thiếu mã học viên hoặc tháng thu.');
+        const row = {maHV, thang, soTien:+t.soTien || 0, trangThai:'Đã đóng',
+          ngayDong:todayStr(), hinhThuc:String(t.hinhThuc || '')};
+        const i = db.hocPhi.findIndex(x => x.maHV === maHV && x.thang === thang);
+        if (i >= 0) db.hocPhi[i] = row; else db.hocPhi.push(row);
+        data = {ok: true};
+      } else {
+        throw new Error('Không có hàm API: ' + fn);
+      }
+      res(data);
+    } catch (e) { rej(e); }
+  }, 200));
+}
+
+/* ---------------- gọi API (demo hoặc server thật) ---------------- */
+async function api(fn, args) {
+  showLoading(true);
+  try {
+    if (DEMO_MODE) return await demoApi(fn, args || []);
+    const r = await fetch(API_URL, {method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({fn, args:args || []})});
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Lỗi server');
+    return j.data;
+  } finally {
+    showLoading(false);
+  }
+}
+
+/* ---------------- điều hướng ---------------- */
+const NAV = [
+  {v:'dash',  t:'Tổng quan', ic:'🏠'},
+  {v:'att',   t:'Điểm danh', ic:'📝'},
+  {v:'fee',   t:'Học phí',   ic:'💰'},
+  {v:'sched', t:'Lịch học',  ic:'📅'},
+  {v:'stu',   t:'Học viên',  ic:'👥'}
+];
+function buildNav() {
+  const html = NAV.map(n =>
+    '<button class="navbtn" data-go="' + n.v + '" onclick="go(\'' + n.v + '\')">' +
+    '<span class="ic">' + n.ic + '</span><span>' + n.t + '</span></button>').join('');
+  $('sidebar').innerHTML = html;
+  $('bottomnav').innerHTML = html;
+}
+let CUR = 'dash';
+function go(v) {
+  CUR = v;
+  document.querySelectorAll('[data-go]').forEach(b =>
+    b.classList.toggle('active', b.getAttribute('data-go') === v));
+  RENDER[v]();
+  window.scrollTo(0, 0);
+}
+const tenLop = ma => { const c = DB.lopHoc.find(x => x.maLop === ma); return c ? c.tenLop : ma; };
+
+/* ---------------- VIEW 1: Tổng quan ---------------- */
+function renderDash() {
+  const t = todayStr(), th = curMonth();
+  const recs = DB.diemDanh.filter(r => r.ngay === t);
+  const coMat = recs.filter(r => r.trangThai === 'Có mặt').length;
+  const tyLe = recs.length ? Math.round(coMat / recs.length * 100) : 0;
+  const thuThang = DB.hocPhi
+    .filter(h => h.thang === th && h.trangThai === 'Đã đóng')
+    .reduce((s, h) => s + (+h.soTien || 0), 0);
+  // lớp diễn ra hôm nay (theo thứ), sort theo giờ bắt đầu
+  const tn = todayNum();
+  const sap = DB.lichHoc
+    .filter(e => THU_MAP[e.thu] === tn)
+    .sort((a, b) => String(a.gioBatDau).localeCompare(String(b.gioBatDau)));
+  $('view').innerHTML =
+    '<h2>Tổng quan</h2>' +
+    '<div class="cards">' +
+      '<div class="card"><div class="lb">Tổng học viên</div><div class="vl">' + DB.hocVien.length + '</div></div>' +
+      '<div class="card"><div class="lb">Lớp đang mở</div><div class="vl">' + DB.lopHoc.length + '</div></div>' +
+      '<div class="card"><div class="lb">Học phí đã thu tháng này</div><div class="vl">' + money(thuThang) + ' <span class="sm">đ</span></div></div>' +
+      '<div class="card"><div class="lb">Điểm danh hôm nay</div><div class="vl">' + tyLe + '%</div>' +
+        '<div class="sm">' + coMat + '/' + recs.length + ' có mặt</div></div>' +
+    '</div>' +
+    '<div class="panel"><h3>Lớp sắp diễn ra (hôm nay)</h3>' +
+      (sap.length ? sap.map(e =>
+        '<div class="srow"><div class="inf"><b>' + esc(tenLop(e.maLop)) + '</b>' +
+        '<span>' + esc(e.gioBatDau) + '–' + esc(e.gioKetThuc) +
+        ' · Phòng ' + esc(e.phong) + ' · ' + esc(e.giaoVien) + '</span></div></div>'
+      ).join('') : '<div class="empty">Hôm nay không có lớp nào</div>') +
+    '</div>';
+}
+
+/* ---------------- VIEW 2: Điểm danh ---------------- */
+const ATT = {maLop:'', ngay:todayStr(), sel:{}}; // sel[maHV] = {trangThai, ghiChu}
+function loadAttSel() {
+  ATT.sel = {};
+  // nạp trạng thái đã lưu của buổi này (nếu có)
+  DB.diemDanh
+    .filter(r => r.ngay === ATT.ngay && r.maLop === ATT.maLop)
+    .forEach(r => { ATT.sel[r.maHV] = {trangThai:r.trangThai || 'Có mặt', ghiChu:r.ghiChu || ''}; });
+  // học viên chưa có dòng -> mặc định Có mặt
+  DB.hocVien.filter(h => h.maLop === ATT.maLop).forEach(h => {
+    if (!ATT.sel[h.maHV]) ATT.sel[h.maHV] = {trangThai:'Có mặt', ghiChu:''};
+  });
+}
+function stuRow(h) {
+  const s = ATT.sel[h.maHV] || {trangThai:'Có mặt', ghiChu:''};
+  const cls = {'Có mặt':'on-co', 'Vắng mặt':'on-vang', 'Xin nghỉ':'on-nghi'};
+  const btns = ['Có mặt', 'Vắng mặt', 'Xin nghỉ'].map(t =>
+    '<button class="tg' + (s.trangThai === t ? ' ' + cls[t] : '') + '"' +
+    ' onclick="attToggle(\'' + esc(h.maHV) + '\',\'' + t + '\')">' + t + '</button>').join('');
+  return '<div class="stu"><div class="nm">' + esc(h.hoTen) +
+    ' <span style="color:var(--muted);font-weight:400;font-size:13px">(' + esc(h.maHV) + ')</span></div>' +
+    '<div class="toggles">' + btns + '</div>' +
+    '<input class="note" placeholder="Ghi chú..." value="' + esc(s.ghiChu) + '"' +
+    ' oninput="attNote(\'' + esc(h.maHV) + '\',this.value)"></div>';
+}
+function renderAtt() {
+  if (!ATT.maLop && DB.lopHoc.length) ATT.maLop = DB.lopHoc[0].maLop;
+  loadAttSel();
+  const opts = DB.lopHoc.map(c =>
+    '<option value="' + esc(c.maLop) + '"' + (c.maLop === ATT.maLop ? ' selected' : '') + '>' +
+    esc(c.tenLop) + '</option>').join('');
+  const list = DB.hocVien.filter(h => h.maLop === ATT.maLop);
+  $('view').innerHTML =
+    '<h2>Điểm danh</h2>' +
+    '<div class="panel"><div class="row">' +
+      '<div class="fld"><label>Lớp</label><select id="attLop" onchange="attChange()">' + opts + '</select></div>' +
+      '<div class="fld"><label>Ngày</label><input type="date" id="attNgay" value="' + esc(ATT.ngay) + '" onchange="attChange()"></div>' +
+    '</div></div>' +
+    '<div id="attList">' +
+      (list.map(stuRow).join('') || '<div class="empty">Lớp này chưa có học viên</div>') +
+    '</div>' +
+    (list.length ? '<button class="btn btn-block" onclick="saveAtt()">Lưu điểm danh</button>' : '');
+}
+function attChange() {
+  ATT.maLop = $('attLop').value;
+  ATT.ngay = $('attNgay').value || todayStr();
+  renderAtt();
+}
+function attToggle(maHV, t) {
+  if (!ATT.sel[maHV]) ATT.sel[maHV] = {trangThai:'Có mặt', ghiChu:''};
+  ATT.sel[maHV].trangThai = t;
+  renderAtt();
+}
+function attNote(maHV, v) {
+  if (!ATT.sel[maHV]) ATT.sel[maHV] = {trangThai:'Có mặt', ghiChu:''};
+  ATT.sel[maHV].ghiChu = v; // chỉ lưu state, không render lại để khỏi mất focus
+}
+async function saveAtt() {
+  const records = Object.keys(ATT.sel).map(maHV => ({
+    maHV, trangThai:ATT.sel[maHV].trangThai, ghiChu:ATT.sel[maHV].ghiChu
+  }));
+  try {
+    const r = await api('takeAttendance', [{ngay:ATT.ngay, maLop:ATT.maLop, records}]);
+    DB = await api('getInitData'); // tải lại để đồng bộ
+    toast('Đã lưu điểm danh (' + r.saved + ' học viên)');
+  } catch (e) { toast('Lỗi: ' + e.message); }
+}
+
+/* ---------------- VIEW 3: Học phí ---------------- */
+const FEE = {thang:curMonth()};
+function feeRow(h) {
+  const lop = DB.lopHoc.find(c => c.maLop === h.maLop);
+  const hp = DB.hocPhi.find(x => x.maHV === h.maHV && x.thang === FEE.thang);
+  const daDong = hp && hp.trangThai === 'Đã đóng';
+  const tien = hp ? +hp.soTien : (lop ? +lop.hocPhi : 0); // số tiền: ưu tiên đã ghi, không thì theo lớp
+  return '<tr><td><b>' + esc(h.hoTen) + '</b><br>' +
+    '<span style="color:var(--muted);font-size:12px">' + esc(lop ? lop.tenLop : '') + '</span></td>' +
+    '<td>' + money(tien) + ' đ</td>' +
+    '<td><span class="badge ' + (daDong ? 'b-dong' : 'b-chua') + '">' + (daDong ? 'Đã đóng' : 'Chưa đóng') + '</span></td>' +
+    '<td>' + (daDong ? '' : '<button class="mini" onclick="openThu(\'' + esc(h.maHV) + '\')">Thu</button>') + '</td></tr>';
+}
+function renderFee() {
+  const list = [...DB.hocVien].sort((a, b) => String(a.hoTen).localeCompare(String(b.hoTen), 'vi'));
+  $('view').innerHTML =
+    '<h2>Học phí</h2>' +
+    '<div class="panel"><div class="row">' +
+      '<div class="fld"><label>Tháng</label><input type="month" id="feeThang" value="' + esc(FEE.thang) + '"' +
+      ' onchange="FEE.thang=this.value;renderFee()"></div>' +
+    '</div></div>' +
+    '<div class="panel" style="padding:0;overflow:auto"><table>' +
+      '<thead><tr><th>Học viên</th><th>Số tiền</th><th>Trạng thái</th><th></th></tr></thead><tbody>' +
+      (list.map(feeRow).join('') || '<tr><td colspan="4" class="empty">Chưa có học viên</td></tr>') +
+    '</tbody></table></div>';
+}
+function openThu(maHV) {
+  const h = DB.hocVien.find(x => x.maHV === maHV); if (!h) return;
+  const lop = DB.lopHoc.find(c => c.maLop === h.maLop);
+  const hp = DB.hocPhi.find(x => x.maHV === maHV && x.thang === FEE.thang);
+  const tien = hp ? +hp.soTien : (lop ? +lop.hocPhi : 0);
+  openModal(
+    '<h3>Thu học phí</h3>' +
+    '<p style="margin-bottom:8px"><b>' + esc(h.hoTen) + '</b> — ' + esc(lop ? lop.tenLop : '') + '</p>' +
+    '<p style="margin-bottom:12px">Tháng ' + esc(FEE.thang) + ': ' +
+      '<b style="color:var(--do);font-size:18px">' + money(tien) + ' đ</b></p>' +
+    '<div class="fld" style="margin-bottom:12px"><label>Hình thức</label>' +
+      '<select id="thuHT"><option>Tiền mặt</option><option>Chuyển khoản</option></select></div>' +
+    '<button class="btn btn-block" onclick="doThu(\'' + esc(maHV) + '\',' + tien + ')">Xác nhận thu</button>' +
+    '<button class="btn-ghost btn-block" onclick="closeModal()">Hủy</button>');
+}
+async function doThu(maHV, tien) {
+  try {
+    await api('collectTuition', [{maHV, thang:FEE.thang, soTien:tien, hinhThuc:$('thuHT').value}]);
+    closeModal();
+    DB = await api('getInitData');
+    renderFee();
+    toast('Đã thu học phí');
+  } catch (e) { toast('Lỗi: ' + e.message); }
+}
+
+/* ---------------- VIEW 4: Lịch học ---------------- */
+function renderSched() {
+  const tn = todayNum();
+  const cols = THU_LIST.map((thu, i) => {
+    const num = i + 2; // Thứ 2 -> 2 ... Chủ nhật -> 8
+    const evs = DB.lichHoc
+      .filter(e => THU_MAP[e.thu] === num)
+      .sort((a, b) => String(a.gioBatDau).localeCompare(String(b.gioBatDau)));
+    return '<div class="daycol' + (num === tn ? ' today' : '') + '"><div class="dh">' + thu + '</div>' +
+      (evs.map(e =>
+        '<div class="ev"><b>' + esc(tenLop(e.maLop)) + '</b>' +
+        esc(e.gioBatDau) + '–' + esc(e.gioKetThuc) + '<br>' +
+        '<span>' + esc(e.phong) + ' · ' + esc(e.giaoVien) + '</span></div>'
+      ).join('') || '<div class="empty" style="padding:8px">—</div>') + '</div>';
+  }).join('');
+  $('view').innerHTML = '<h2>Lịch học</h2><div class="sched"><div class="sched-grid">' + cols + '</div></div>';
+}
+
+/* ---------------- VIEW 5: Học viên ---------------- */
+const STU = {q:''};
+function renderStu() {
+  $('view').innerHTML =
+    '<h2>Học viên (' + DB.hocVien.length + ')</h2>' +
+    '<div class="row"><div class="fld"><input id="stuQ" placeholder="Tìm tên, mã, SĐT..." value="' + esc(STU.q) + '"' +
+      ' oninput="STU.q=this.value;renderStuList()"></div>' +
+      '<div><button class="btn" onclick="openAddStu()">+ Thêm</button></div></div>' +
+    '<div class="panel" id="stuList"></div>';
+  renderStuList();
+}
+function renderStuList() {
+  const q = STU.q.trim().toLowerCase();
+  const list = DB.hocVien.filter(h => !q ||
+    h.hoTen.toLowerCase().includes(q) ||
+    h.maHV.toLowerCase().includes(q) ||
+    String(h.sdt || '').includes(q));
+  $('stuList').innerHTML = list.map(h =>
+    '<div class="srow"><div class="av">' + esc((h.hoTen || '?').trim().charAt(0)) + '</div>' +
+    '<div class="inf"><b>' + esc(h.hoTen) + '</b>' +
+    '<span>' + esc(h.maHV) + ' · ' + esc(tenLop(h.maLop)) + ' · ' + esc(h.sdt || '') + '</span></div></div>'
+  ).join('') || '<div class="empty">Không tìm thấy học viên</div>';
+}
+function openAddStu() {
+  const lopOpts = DB.lopHoc.map(c =>
+    '<option value="' + esc(c.maLop) + '">' + esc(c.tenLop) + '</option>').join('');
+  openModal(
+    '<h3>Thêm học viên</h3>' +
+    '<div class="fld" style="margin-bottom:10px"><label>Họ tên *</label><input id="nsTen"></div>' +
+    '<div class="fld" style="margin-bottom:10px"><label>SĐT</label><input id="nsSdt" inputmode="tel"></div>' +
+    '<div class="fld" style="margin-bottom:10px"><label>Lớp</label><select id="nsLop">' + lopOpts + '</select></div>' +
+    '<div class="fld" style="margin-bottom:10px"><label>Ngày sinh</label><input id="nsNs" type="date"></div>' +
+    '<div class="fld" style="margin-bottom:12px"><label>Ghi chú</label><input id="nsGc"></div>' +
+    '<button class="btn btn-block" onclick="doAddStu()">Lưu</button>' +
+    '<button class="btn-ghost btn-block" onclick="closeModal()">Hủy</button>');
+}
+async function doAddStu() {
+  const hoTen = $('nsTen').value.trim();
+  if (!hoTen) { toast('Vui lòng nhập họ tên'); return; }
+  try {
+    const r = await api('saveStudent', [{maHV:'', hoTen,
+      sdt:$('nsSdt').value.trim(), maLop:$('nsLop').value,
+      ngaySinh:$('nsNs').value, ghiChu:$('nsGc').value.trim()}]);
+    closeModal();
+    DB = await api('getInitData');
+    renderStu();
+    toast('Đã thêm học viên ' + r.maHV);
+  } catch (e) { toast('Lỗi: ' + e.message); }
+}
+
+/* ---------------- khởi tạo ---------------- */
+const RENDER = {dash:renderDash, att:renderAtt, fee:renderFee, sched:renderSched, stu:renderStu};
+let DB = null;
+async function init() {
+  if (DEMO_MODE) $('demoBanner').style.display = 'block';
+  $('modalBg').onclick = closeModal;
+  buildNav();
+  try {
+    DB = await api('getInitData');
+  } catch (e) {
+    $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>';
+    return;
+  }
+  go('dash');
+}
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
