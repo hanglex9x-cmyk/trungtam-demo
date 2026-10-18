@@ -13,12 +13,34 @@
   --ink:#241d3d; --muted:#8f8aa5; --bg:#f4f2fa; --card:#fff;
   --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2; --amber:#d97706; --amber-bg:#fef3c7;
   --r:20px; --sh:0 8px 24px rgba(247,103,7,.12);
+  --glowc:var(--glowc); --shc:rgba(150,70,0,.22); --bodybg:#f3e2c8;
+}
+[data-theme="red"]{
+  --p1:#c92a2a; --p2:#e03131; --p3:#f03e3e; --p4:#ff8787;
+  --grad:linear-gradient(135deg,#c92a2a 0%,#e03131 45%,#ff6b6b 100%);
+  --grad-soft:linear-gradient(135deg,#ffe3e3,#ffc9c9 60%,#ffa8a8);
+  --sh:0 8px 24px rgba(224,49,49,.12);
+  --glowc:rgba(224,49,49,.45); --shc:rgba(150,20,20,.22); --bodybg:#f6dcdc;
+}
+[data-theme="green"]{
+  --p1:#099268; --p2:#0ca678; --p3:#12b886; --p4:#94d82d;
+  --grad:linear-gradient(135deg,#099268 0%,#0ca678 45%,#51cf66 100%);
+  --grad-soft:linear-gradient(135deg,#d3f9d8,#b2f2bb 60%,#8ce99a);
+  --sh:0 8px 24px rgba(12,166,120,.12);
+  --glowc:rgba(12,166,120,.45); --shc:rgba(20,120,80,.22); --bodybg:#dcefdd;
+}
+[data-theme="blue"]{
+  --p1:#1864ab; --p2:#1971c2; --p3:#1c7ed6; --p4:#66d9e8;
+  --grad:linear-gradient(135deg,#1864ab 0%,#1971c2 45%,#4dabf7 100%);
+  --grad-soft:linear-gradient(135deg,#d0ebff,#a5d8ff 60%,#74c0fc);
+  --sh:0 8px 24px rgba(25,113,194,.12);
+  --glowc:rgba(25,113,194,.45); --shc:rgba(20,60,120,.22); --bodybg:#d9e8f5;
 }
 html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f3e2c8;color:var(--ink);font-size:15px;display:flex;justify-content:center}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bodybg);color:var(--ink);font-size:15px;display:flex;justify-content:center}
 /* ===== phone frame ===== */
 .phone{width:100%;max-width:430px;min-height:100dvh;background:var(--bg);position:relative;overflow:clip;flex:none;align-self:flex-start}
-@media(min-width:480px){.phone{margin:0;box-shadow:0 0 60px rgba(150,70,0,.25)}}
+@media(min-width:480px){.phone{margin:0;box-shadow:0 0 60px var(--shc)}}
 /* ===== appbar ===== */
 .appbar{background:var(--grad);color:#fff;padding:22px 18px 30px;border-radius:0 0 30px 30px;position:relative;overflow:hidden}
 .appbar::before,.appbar::after{content:'';position:absolute;border-radius:50%;filter:blur(2px);opacity:.35}
@@ -39,8 +61,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .kpi{background:var(--card);border-radius:var(--r);padding:13px 12px;box-shadow:var(--sh);position:relative;overflow:hidden}
 .kpi .ic{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:7px}
 .kpi .ic svg{width:19px;height:19px}
-.g1{background:linear-gradient(135deg,#f76707,#ff922b)} .g2{background:linear-gradient(135deg,#fa5252,#ff8787)}
-.g3{background:linear-gradient(135deg,#fab005,#ffd43b)} .g4{background:linear-gradient(135deg,#12b886,#38d9a9)}
+.g1{background:linear-gradient(135deg,var(--p1),var(--p2))} .g2{background:linear-gradient(135deg,var(--p2),var(--p3))}
+.g3{background:linear-gradient(135deg,var(--p3),var(--p4))} .g4{background:linear-gradient(135deg,var(--p1),var(--p4))}
 .kpi .lb{font-size:11px;color:var(--muted)}
 .kpi .vl{font-size:19px;font-weight:800;margin:1px 0 5px}
 .kpi .vl small{font-size:12px;font-weight:600;color:var(--muted)}
@@ -57,10 +79,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
 .bval{font-size:10px;font-weight:700;color:var(--p1)}
 .bar{width:100%;max-width:38px;border-radius:9px 9px 5px 5px;background:linear-gradient(180deg,var(--p2),var(--p3));min-height:6px;position:relative;transition:height .4s}
-.bcol.cur .bar{background:var(--grad);box-shadow:0 4px 14px rgba(247,103,7,.45)}
+.bcol.cur .bar{background:var(--grad);box-shadow:0 4px 14px var(--glowc)}
 .barstack{width:100%;border-radius:8px;background:#ece7f5;position:relative;overflow:hidden}
 .barstack .seg-t{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--p2),var(--p3));border-radius:8px}
-.bcol.cur .seg-t{background:var(--grad);box-shadow:0 4px 14px rgba(247,103,7,.45)}
+.bcol.cur .seg-t{background:var(--grad);box-shadow:0 4px 14px var(--glowc)}
 .legend{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
 .lg-t{background:var(--grad)}
@@ -73,7 +95,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid #e4e0f2;background:#fff;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
-.chip.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(247,103,7,.4)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px var(--glowc)}
 /* ===== attendance ===== */
 .sumline{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--sh);margin:10px 0;font-size:14px;font-weight:600}
 .sumline .n{background:var(--grad);color:#fff;border-radius:12px;padding:5px 12px;font-size:13px}
@@ -88,7 +110,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .tg.on-vang{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .tg.on-nghi{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
 .stickybtn{position:sticky;bottom:96px;z-index:5;margin-top:12px}
-.btn{background:var(--grad);color:#fff;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 8px 20px rgba(247,103,7,.4)}
+.btn{background:var(--grad);color:#fff;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 8px 20px var(--glowc)}
 .btn:active{transform:scale(.98)}
 /* ===== schedule ===== */
 .weekstrip{display:flex;gap:6px;margin-bottom:12px}
@@ -122,11 +144,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .searchbar input{border:0;outline:0;font-size:15px;flex:1;background:none;color:var(--ink)}
 .srow{background:var(--card);border-radius:16px;padding:11px 12px;box-shadow:var(--sh);margin-bottom:9px;display:flex;align-items:center;gap:10px;cursor:pointer}
 /* ===== tabbar ===== */
-.tabbar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(406px,calc(100% - 24px));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 34px rgba(150,70,0,.20);display:flex;padding:8px;z-index:50}
+.tabbar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(406px,calc(100% - 24px));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 34px var(--shc);display:flex;padding:8px;z-index:50}
 .tab{flex:1;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:10px;font-weight:600}
 .tab .ti{font-size:20px;width:44px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:14px;transition:.2s}
 .tab.on{color:var(--p1)}
-.tab.on .ti{background:var(--grad);box-shadow:0 4px 12px rgba(247,103,7,.45)}
+.tab.on .ti{background:var(--grad);box-shadow:0 4px 12px var(--glowc)}
 .tab .ti{color:var(--muted)}
 .tab.on .ti{color:#fff}
 .tab .ti svg{width:22px;height:22px}
@@ -166,7 +188,7 @@ input:focus,select:focus{border-color:var(--p2)}
 .upmeta{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);margin-top:5px;flex-wrap:wrap}
 .upmeta svg{width:14px;height:14px}
 .upmeta .dot{opacity:.5}
-.upcount{flex:none;font-size:12px;font-weight:700;color:var(--p1);background:#fff1e6;padding:7px 13px;border-radius:99px;white-space:nowrap}
+.upcount{flex:none;font-size:12px;font-weight:700;color:var(--p1);background:var(--grad-soft);padding:7px 13px;border-radius:99px;white-space:nowrap}
 .linklike{border:0;background:none;color:var(--p1);font-weight:700;font-size:13px;cursor:pointer;padding:4px}
 .lrow{display:flex;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f4f1fa;font-size:13.5px}
 .lrow:last-child{border-bottom:0}
@@ -195,6 +217,10 @@ input[type=date]{min-height:48px}
 .pinpad button{aspect-ratio:1.7;border:0;border-radius:16px;background:rgba(255,255,255,.2);color:#fff;font-size:22px;font-weight:700;cursor:pointer}
 .pinpad button:active{background:rgba(255,255,255,.38)}
 .lockreset{border:0;background:none;color:#fff;font-size:13px;opacity:.85;cursor:pointer;text-decoration:underline}
+.themes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.theme-sw{border:2px solid #f0ebf9;background:#fff;border-radius:16px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink)}
+.theme-sw i{width:38px;height:38px;border-radius:12px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.theme-sw.on{border-color:var(--p2);box-shadow:var(--sh)}
 .shake{animation:shk .3s}
 @keyframes shk{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
 </style>
@@ -427,7 +453,7 @@ function vTongQuan() {
     const pT = s.phai ? Math.max(4, Math.round(s.thu/s.phai*100)) : 0;
     return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.thu?Math.round(s.thu/1e6)+'tr':''}</div><div class="barstack" style="height:${h}%"><i class="seg-t" style="height:${pT}%"></i></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   const barsDD = last6.map(m => { const s = monthStats(m); const h = Math.max(5, Math.round(s.tyle));
-    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.tyle?s.tyle.toFixed(0)+'%':''}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,#12b886,#38d9a9)"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
+    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.tyle?s.tyle.toFixed(0)+'%':''}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,var(--p4),var(--p2))"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   return mnavHTML() + `
   <div class="kpis">
     <div class="kpi"><div class="ic g1">${I.users}</div><div class="lb">Học viên</div><div class="vl">${st.hv}</div>${deltaHTML(st.hv, pv.hv, '')}</div>
@@ -450,8 +476,22 @@ const CFG = {
   get ten() { try { return localStorage.getItem('tt_ten') || 'Trung Tâm Dạy Thêm'; } catch(e) { return 'Trung Tâm Dạy Thêm'; } },
   set ten(v) { try { localStorage.setItem('tt_ten', v); } catch(e) {} },
   get pin() { try { return localStorage.getItem('tt_pin') || ''; } catch(e) { return ''; } },
-  set pin(v) { try { if (v) localStorage.setItem('tt_pin', v); else localStorage.removeItem('tt_pin'); } catch(e) {} }
+  set pin(v) { try { if (v) localStorage.setItem('tt_pin', v); else localStorage.removeItem('tt_pin'); } catch(e) {} },
+  get theme() { try { return localStorage.getItem('tt_theme') || 'orange'; } catch(e) { return 'orange'; } },
+  set theme(v) { try { localStorage.setItem('tt_theme', v); } catch(e) {} }
 };
+const THEMES = [
+  ['orange','Cam','linear-gradient(135deg,#ff6a00,#ff5e62)'],
+  ['red','Đỏ','linear-gradient(135deg,#c92a2a,#ff6b6b)'],
+  ['green','Xanh lá','linear-gradient(135deg,#099268,#51cf66)'],
+  ['blue','Xanh dương','linear-gradient(135deg,#1864ab,#4dabf7)']
+];
+function applyTheme() {
+  const t = CFG.theme;
+  if (t && t !== 'orange') document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function setTheme(t) { CFG.theme = t; applyTheme(); render(); toast('Đã đổi màu giao diện'); }
 function applyTen() { const t = CFG.ten; $('appTitle').textContent = t; const lt = $('lockTitle'); if (lt) lt.textContent = t; document.title = t; }
 function vCaiDat() {
   const feeRows = D.lopHoc.map(c => `
@@ -465,7 +505,10 @@ function vCaiDat() {
   }).join('');
   return `
   <div class="sethead"><button class="backbtn" onclick="go('tongquan')">‹</button><b>Cài đặt</b><span style="width:38px"></span></div>
-  <div class="secttl" style="margin-top:0">Thông tin trung tâm</div>
+  <div class="secttl" style="margin-top:0">Màu sắc giao diện</div>
+  <div class="panel"><div class="themes">${THEMES.map(([k,lb,bg]) => `
+    <button class="theme-sw ${CFG.theme===k?'on':''}" onclick="setTheme('${k}')"><i style="background:${bg}"></i>${lb}</button>`).join('')}</div></div>
+  <div class="secttl">Thông tin trung tâm</div>
   <div class="panel"><label>Tên hiển thị trên banner</label>
     <div class="setrow"><input id="cfgTen" value="${esc(CFG.ten)}" placeholder="VD: Lớp học cô Hoa"><button class="btn" onclick="saveTen()">Lưu</button></div></div>
   <div class="secttl">Học phí các lớp</div>
@@ -721,7 +764,7 @@ async function doAddStu() {
   $('todayLine').textContent = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][d.getDay()] + ', ' + pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
   const h = d.getHours();
   $('helloLine').textContent = (h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
-  load().then(() => { render(); applyTen(); if (CFG.pin) showLock(); }).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
+  load().then(() => { applyTheme(); render(); applyTen(); if (CFG.pin) showLock(); }).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
 })();
 </script>
 </body>
