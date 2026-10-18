@@ -144,13 +144,10 @@ input:focus,select:focus{border-color:var(--p2)}
 .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
 .demo-tag{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;z-index:60;display:none}
 .secttl{font-size:15px;font-weight:800;margin:14px 2px 10px}
-.uprow{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #f4f1fa}
+.uprow{padding:9px 0;border-bottom:1px solid #f4f1fa}
 .uprow:last-child{border-bottom:0}
-.uprow .tm{background:var(--grad-soft);border-radius:10px;padding:7px 9px;font-size:12px;font-weight:800;color:var(--p1);flex:none;white-space:nowrap}
-.uprow .inf{flex:1;min-width:0}
-.uprow .inf b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uprow .inf span{font-size:12px;color:var(--muted)}
-.uprow .when{font-size:11px;font-weight:700;color:var(--p1);background:#fff1e6;padding:4px 9px;border-radius:99px;flex:none}
+.uprow .d{font-size:13.5px;font-weight:800}
+.uprow .t{font-size:12.5px;color:var(--muted);margin-top:2px}
 .lrow{display:flex;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f4f1fa;font-size:13.5px}
 .lrow:last-child{border-bottom:0}
 .lrow b{color:var(--p1);font-size:13px;white-space:nowrap;flex:none}
@@ -189,10 +186,27 @@ function monthName(ym) { return 'Tháng ' + (+ym.slice(5,7)) + '/' + ym.slice(0,
 function dateVI(ds) { const [y,m,d] = ds.split('-').map(Number); return 'Thứ ' + ['','2','3','4','5','6','7',''][0] + ''; } // (không dùng)
 function fmtDateVI(ds) {
   const d = new Date(ds + 'T00:00:00');
-  const t = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][d.getDay()];
+  const t = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'][d.getDay()];
   return t + ', ' + pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
 }
 const THU_NAMES = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+const THU_FULL = {'Thứ 2':'Thứ hai','Thứ 3':'Thứ ba','Thứ 4':'Thứ tư','Thứ 5':'Thứ năm','Thứ 6':'Thứ sáu','Thứ 7':'Thứ bảy','Chủ nhật':'Chủ nhật'};
+const thuFull = t => THU_FULL[t] || t;
+function dayLabelFull(d) {
+  const t = new Date(); t.setHours(0,0,0,0);
+  const x = new Date(d); x.setHours(0,0,0,0);
+  const diff = Math.round((x - t) / 864e5);
+  const ds = pad2(x.getDate()) + '/' + pad2(x.getMonth()+1) + '/' + String(x.getFullYear()).slice(2);
+  const wd = thuFull(THU_NAMES[(x.getDay() + 6) % 7]);
+  if (diff === 0) return 'Hôm nay (' + ds + ')';
+  if (diff === 1) return 'Ngày mai (' + ds + ')';
+  return wd + ' (' + ds + ')';
+}
+/* dd/mm/yyyy cho chuỗi yyyy-MM-dd */
+function dmy(ds) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(ds || '');
+  return m ? m[3] + '/' + m[2] + '/' + m[1] : (ds || '—');
+}
 const initials = name => name.trim().split(/\s+/).slice(-2).map(w => w[0]).join('').toUpperCase();
 /* Chuẩn hóa "tháng" từ server: chấp nhận cả 'yyyy-MM' lẫn chuỗi Date kiểu "Thu Oct 01 2026...".
  * Parse trực tiếp chuỗi, KHÔNG qua new Date() để tránh lệch tháng do múi giờ. */
@@ -347,9 +361,8 @@ function vTongQuan() {
     <div class="kpi"><div class="ic g4">${I.home}</div><div class="lb">Lớp đang mở</div><div class="vl">${st.lop}</div><span class="delta flat">${D.lopHoc.map(c=>c.tenLop).join(' · ')}</span></div>
   </div>
   <div class="panel"><h3>🔔 Lớp sắp diễn ra</h3><div class="sub">Các buổi học gần nhất</div>${upcomingSessions(4).map(u => `
-    <div class="uprow"><div class="tm">${esc(u.gio)}</div>
-      <div class="inf"><b>${esc(u.ten)}</b><span>${esc(u.gv)}${u.phong ? ' · ' + esc(u.phong) : ''}</span></div>
-      <span class="when">${dayLabel(u.date)}</span></div>`).join('') || '<div class="empty">Chưa có lịch</div>'}</div>
+    <div class="uprow"><div class="d">${dayLabelFull(u.date)}</div>
+      <div class="t">${esc(u.gio)} · ${esc(u.ten)}${u.phong ? ' · ' + esc(u.phong) : ''}</div></div>`).join('') || '<div class="empty">Chưa có lịch</div>'}</div>
   <div class="panel"><h3>📈 Học phí 6 tháng gần nhất</h3><div class="sub">Tổng tiền đã thu mỗi tháng (triệu đồng)</div><div class="bars">${barsHP}</div></div>
   <div class="panel"><h3>📊 Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>`;
 }
@@ -381,7 +394,8 @@ function vDiemDanh() {
       </div></div>`; }).join('');
   return `
     <div class="mnav" style="margin-bottom:10px"><span style="font-size:13px;color:var(--muted);font-weight:700">📅 Ngày</span>
-      <input type="date" id="attDate" value="${S.date}" style="width:auto;border:0;background:none;font-size:15px;font-weight:700;color:var(--p1)" onchange="S.date=this.value;render()"></div>
+      <label style="position:relative;cursor:pointer"><b style="color:var(--p1);font-size:14px">${fmtDateVI(S.date)}</b>
+      <input type="date" id="attDate" value="${S.date}" style="position:absolute;inset:-6px;opacity:0;width:100%;cursor:pointer" onchange="S.date=this.value;render()"></label></div>
     <div class="secttl">Chọn lớp</div>
     <div class="chips">${chips}</div>
     <div class="sumline"><span>Danh sách <b>${esc(clsOf(S.cls).tenLop||'')}</b></span><span class="n">Có mặt ${co}/${hvs.length}</span></div>
@@ -418,7 +432,7 @@ function vLich() {
     const isT = g.ds === tS;
     const rows = g.evs.map(e => { const c = clsOf(e.maLop);
       return `<div class="lrow"><b>${esc(e.gioBatDau)}–${esc(e.gioKetThuc)}</b><span><b style="color:var(--ink)">${esc(c.tenLop||e.maLop)}</b> · ${esc(e.giaoVien||c.giaoVien||'')} · ${esc(e.phong||c.phong||'')}</span></div>`; }).join('');
-    return `<div class="secttl" style="${isT ? 'color:var(--p1)' : ''}">${THU_NAMES[g.i]} · ${pad2(g.d.getDate())}/${pad2(g.d.getMonth()+1)}${isT ? ' · hôm nay' : ''}</div>`
+    return `<div class="secttl" style="${isT ? 'color:var(--p1)' : ''}">${thuFull(THU_NAMES[g.i])}, ${pad2(g.d.getDate())}/${pad2(g.d.getMonth()+1)}${isT ? ' · hôm nay' : ''}</div>`
       + `<div class="panel" style="margin-top:0;padding:4px 14px">${rows}</div>`;
   }).join('');
   return `<div class="secttl" style="margin-top:0">Lịch tuần này</div>` + (html || '<div class="empty">Chưa có lịch học</div>');
@@ -505,7 +519,7 @@ function openStu(maHV) {
   openModal(`<h3>${esc(h.hoTen)}</h3>
     <div class="kv"><span>Lớp</span><b>${esc(c.tenLop||'')}</b></div>
     <div class="kv"><span>SĐT</span><b>${esc(h.sdt||'—')}</b></div>
-    <div class="kv"><span>Ngày sinh</span><b>${esc(h.ngaySinh||'—')}</b></div>
+    <div class="kv"><span>Ngày sinh</span><b>${dmy(h.ngaySinh)}</b></div>
     ${h.ghiChu?`<div class="kv"><span>Ghi chú</span><b>${esc(h.ghiChu)}</b></div>`:''}
     <div class="secttl">Lịch sử học phí</div><div class="hp-hist">${hrows}</div>
     <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Đóng</button></div>`);
@@ -515,7 +529,9 @@ function addStu() {
     <label>Họ tên *</label><input id="nsName" placeholder="Nguyễn Văn A">
     <label>SĐT</label><input id="nsPhone" placeholder="09...">
     <label>Lớp</label><select id="nsCls">${D.lopHoc.map(c=>`<option value="${c.maLop}">${esc(c.tenLop)}</option>`).join('')}</select>
-    <label>Ngày sinh</label><input id="nsDob" type="date">
+    <label>Ngày sinh</label><label style="position:relative;display:block;cursor:pointer">
+      <div id="nsDobLabel" style="width:100%;padding:11px 13px;border:1.5px solid #ece7f7;border-radius:12px;font-size:14px;color:var(--muted)">Chọn ngày sinh</div>
+      <input id="nsDob" type="date" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer" onchange="var l=this.previousElementSibling;l.textContent=dmy(this.value);l.style.color='var(--ink)'"></label>
     <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn" style="flex:2" onclick="doAddStu()">Lưu</button></div>`);
 }
