@@ -58,6 +58,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .bval{font-size:10px;font-weight:700;color:var(--p1)}
 .bar{width:100%;max-width:38px;border-radius:9px 9px 5px 5px;background:linear-gradient(180deg,var(--p2),var(--p3));min-height:6px;position:relative;transition:height .4s}
 .bcol.cur .bar{background:var(--grad);box-shadow:0 4px 14px rgba(247,103,7,.45)}
+.barstack{width:100%;border-radius:8px;background:#ece7f5;position:relative;overflow:hidden}
+.barstack .seg-t{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--p2),var(--p3));border-radius:8px}
+.bcol.cur .seg-t{background:var(--grad);box-shadow:0 4px 14px rgba(247,103,7,.45)}
+.legend{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.lg-t{background:var(--grad)}
+.lg-c{background:#e3ddf0}
+.lg-sum{margin-left:auto}
+.lg-sum b{color:var(--p1)}
 .blb{font-size:10.5px;color:var(--muted);font-weight:600}
 .bcol.cur .blb{color:var(--p1);font-weight:800}
 /* ===== chips (class selector) ===== */
@@ -411,9 +420,12 @@ function mnav(d) { const n = addMonths(S.month, d); if (n <= curYM()) { S.month 
 function vTongQuan() {
   const st = monthStats(S.month), pv = monthStats(addMonths(S.month, -1));
   const last6 = []; for (let i = 5; i >= 0; i--) last6.push(addMonths(S.month, -i));
-  const hpMax = Math.max(...last6.map(m => monthStats(m).thu), 1);
-  const barsHP = last6.map(m => { const s = monthStats(m); const h = Math.max(5, Math.round(s.thu/hpMax*100));
-    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.thu?Math.round(s.thu/1e6)+'tr':''}</div><div class="bar" style="height:${h}%"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
+  const revMax = Math.max(...last6.map(m => monthStats(m).phai), 1);
+  let revThu = 0, revPhai = 0;
+  const barsRev = last6.map(m => { const s = monthStats(m); revThu += s.thu; revPhai += s.phai;
+    const h = Math.max(6, Math.round(s.phai/revMax*100));
+    const pT = s.phai ? Math.max(4, Math.round(s.thu/s.phai*100)) : 0;
+    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.thu?Math.round(s.thu/1e6)+'tr':''}</div><div class="barstack" style="height:${h}%"><i class="seg-t" style="height:${pT}%"></i></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   const barsDD = last6.map(m => { const s = monthStats(m); const h = Math.max(5, Math.round(s.tyle));
     return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.tyle?s.tyle.toFixed(0)+'%':''}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,#12b886,#38d9a9)"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   return mnavHTML() + `
@@ -428,7 +440,8 @@ function vTongQuan() {
       <div class="upname">${esc(u.ten)}</div>
       <div class="upmeta">${I.clock}<span>${esc(u.gio)}</span></div></div>
       <span class="upcount">${n} học viên</span></div>`; }).join('') || '<div class="empty">Chưa có lịch</div>'}</div>
-  <div class="panel"><h3>${hic(I.trend)}Học phí 6 tháng gần nhất</h3><div class="sub">Tổng tiền đã thu mỗi tháng (triệu đồng)</div><div class="bars">${barsHP}</div></div>
+  <div class="panel"><h3>${hic(I.trend)}Doanh thu theo tháng</h3><div class="sub">6 tháng gần nhất · tiền học phí đã thu (triệu đồng)</div><div class="bars">${barsRev}</div>
+    <div class="legend"><span><i class="lg-t"></i>Đã thu</span><span><i class="lg-c"></i>Chưa thu</span><span class="lg-sum">6 tháng: <b>${money(revThu)} đ</b> / ${money(revPhai)} đ</span></div></div>
   <div class="panel"><h3>${hic(I.chart)}Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>`;
 }
 
