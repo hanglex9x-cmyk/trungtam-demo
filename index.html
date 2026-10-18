@@ -179,6 +179,9 @@ function fmtDateVI(ds) {
 }
 const THU_NAMES = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
 const initials = name => name.trim().split(/\s+/).slice(-2).map(w => w[0]).join('').toUpperCase();
+/* Chuẩn hóa "tháng" từ server: chấp nhận cả 'yyyy-MM' lẫn chuỗi Date kiểu "Thu Oct 01 2026..." */
+const normYM = s => { s = String(s || ''); const m = /^(\d{4})-(\d{2})/.exec(s); if (m) return m[1] + '-' + m[2];
+  const d = new Date(s); return isNaN(d) ? '' : ymOf(d); };
 
 let D = null, DEMO = false;
 const S = { tab:'tongquan', month:curYM(), cls:'L01', date:todayStr(), dayIdx:(new Date().getDay()+6)%7, feeF:'all', q:'', fcls:'all', att:{} };
@@ -240,7 +243,7 @@ const clsOf = ma => D.lopHoc.find(c => c.maLop === ma) || {};
 const hvOf = ma => D.hocVien.find(h => h.maHV === ma) || {};
 function monthStats(ym) {
   let thu = 0, phai = 0, tot = 0, co = 0;
-  D.hocPhi.forEach(h => { if (h.thang === ym) { phai += +h.soTien || 0; if (h.trangThai === 'Đã đóng') thu += +h.soTien || 0; } });
+  D.hocPhi.forEach(h => { if (normYM(h.thang) === ym) { phai += +h.soTien || 0; if (h.trangThai === 'Đã đóng') thu += +h.soTien || 0; } });
   D.diemDanh.forEach(d => { if ((d.ngay||'').slice(0,7) === ym) { tot++; if (d.trangThai === 'Có mặt') co++; } });
   return { thu, phai, tyle: tot ? co/tot*100 : 0, hv: D.hocVien.length, lop: D.lopHoc.length };
 }
@@ -369,7 +372,7 @@ function vLich() {
 
 /* ---------- 4. HỌC PHÍ ---------- */
 function vHocPhi() {
-  const rows = D.hocPhi.filter(h => h.thang === S.month);
+  const rows = D.hocPhi.filter(h => normYM(h.thang) === S.month);
   const byHV = {}; rows.forEach(h => byHV[h.maHV] = h);
   let thu = 0, phai = 0, dong = 0;
   let hvs = D.hocVien.filter(h => {
@@ -411,7 +414,7 @@ function thuHP(maHV) {
 async function doThuHP(maHV) {
   const amt = +$('hpAmt').value || 0, how = $('hpHow').value;
   try { if (!DEMO) await api('collectTuition', [{ maHV, thang:S.month, soTien:amt, hinhThuc:how }]);
-    else { const i = D.hocPhi.findIndex(x => x.maHV===maHV && x.thang===S.month);
+    else { const i = D.hocPhi.findIndex(x => x.maHV===maHV && normYM(x.thang)===S.month);
       const rec = {maHV, thang:S.month, soTien:amt, trangThai:'Đã đóng', ngayDong:todayStr(), hinhThuc:how};
       if (i>=0) D.hocPhi[i] = rec; else D.hocPhi.push(rec); }
     closeModal(); toast('Đã thu ' + money(amt) + ' đ'); render();
@@ -442,7 +445,7 @@ function wireHocVien() {}
 function openStu(maHV) {
   const h = hvOf(maHV), c = clsOf(h.maLop);
   const hist = []; for (let i = 5; i >= 0; i--) hist.push(addMonths(curYM(), -i));
-  const hrows = hist.map(ym => { const r = D.hocPhi.find(x => x.maHV === maHV && x.thang === ym);
+  const hrows = hist.map(ym => { const r = D.hocPhi.find(x => x.maHV === maHV && normYM(x.thang) === ym);
     const ok = r && r.trangThai === 'Đã đóng';
     return `<div class="hrow"><span>${monthName(ym)}</span><span>${r?money(r.soTien)+' đ':'—'}</span><span class="badge ${ok?'b-dong':'b-chua'}">${ok?'Đã đóng':'Chưa đóng'}</span></div>`; }).join('');
   openModal(`<h3>${esc(h.hoTen)}</h3>
