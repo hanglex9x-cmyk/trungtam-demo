@@ -164,6 +164,30 @@ input:focus,select:focus{border-color:var(--p2)}
 .lrow b{color:var(--p1);font-size:13px;white-space:nowrap;flex:none}
 .lrow span{color:var(--ink)}
 input[type=date]{min-height:48px}
+.gearbtn{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:12px;border:0;background:rgba(255,255,255,.22);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.gearbtn svg{width:20px;height:20px}
+.gearbtn:active{transform:scale(.94)}
+.sethead{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 12px}
+.sethead b{font-size:17px}
+.backbtn{width:38px;height:38px;border-radius:12px;border:0;background:var(--card);box-shadow:var(--sh);font-size:22px;font-weight:800;color:var(--p1);cursor:pointer;line-height:1}
+.setrow{display:flex;gap:8px}
+.setrow input{flex:1;width:auto}
+.setrow .btn{flex:none;width:auto;padding:11px 18px}
+.lockscreen{position:fixed;inset:0;z-index:200;background:var(--grad);display:flex;align-items:center;justify-content:center;padding:24px}
+.lockscreen[hidden]{display:none}
+.lock-card{text-align:center;color:#fff;max-width:300px;width:100%}
+.lock-hello{font-size:14px;opacity:.9}
+.lock-card h2{font-size:24px;margin:6px 0 4px}
+.lock-card p{font-size:13px;opacity:.85;margin:0 0 18px}
+.pindots{display:flex;gap:14px;justify-content:center;margin-bottom:22px}
+.pindots i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.7);transition:.15s}
+.pindots i.on{background:#fff;border-color:#fff}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.pinpad button{aspect-ratio:1.7;border:0;border-radius:16px;background:rgba(255,255,255,.2);color:#fff;font-size:22px;font-weight:700;cursor:pointer}
+.pinpad button:active{background:rgba(255,255,255,.38)}
+.lockreset{border:0;background:none;color:#fff;font-size:13px;opacity:.85;cursor:pointer;text-decoration:underline}
+.shake{animation:shk .3s}
+@keyframes shk{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
 </style>
 </head>
 <body>
@@ -171,12 +195,26 @@ input[type=date]{min-height:48px}
 <div class="phone">
   <header class="appbar">
     <div class="hello" id="helloLine">Xin chào</div>
-    <h1>Trung Tâm Dạy Thêm</h1>
+    <h1 id="appTitle">Trung Tâm Dạy Thêm</h1>
     <div class="date" id="todayLine"></div>
+    <button class="gearbtn" onclick="go('caidat')" aria-label="Cài đặt"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar"></nav>
 </div>
+<div id="lock" class="lockscreen" hidden><div class="lock-card">
+    <div class="lock-hello" id="lockHello">Xin chào</div>
+    <h2 id="lockTitle">Trung Tâm Dạy Thêm</h2>
+    <p>Nhập mật khẩu để mở app</p>
+    <div class="pindots"><i></i><i></i><i></i><i></i></div>
+    <div class="pinpad">
+      <button onclick="pinPress('1')">1</button><button onclick="pinPress('2')">2</button><button onclick="pinPress('3')">3</button>
+      <button onclick="pinPress('4')">4</button><button onclick="pinPress('5')">5</button><button onclick="pinPress('6')">6</button>
+      <button onclick="pinPress('7')">7</button><button onclick="pinPress('8')">8</button><button onclick="pinPress('9')">9</button>
+      <span></span><button onclick="pinPress('0')">0</button><button onclick="pinPress('del')">⌫</button>
+    </div>
+    <button class="lockreset" onclick="lockReset()">Quên mật khẩu?</button>
+  </div></div>
 <div class="modal" id="modal"><div class="modal-bg" onclick="closeModal()"></div><div class="modal-box" id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -357,7 +395,7 @@ function upcomingSessions(n) {
 function render() {
   $('tabbar').innerHTML = TABS.map(([k, ic, lb]) =>
     `<button class="tab ${S.tab===k?'on':''}" onclick="go('${k}')"><span class="ti">${ic}</span>${lb}</button>`).join('');
-  const v = { tongquan:vTongQuan, diemdanh:vDiemDanh, lich:vLich, hocphi:vHocPhi, hocvien:vHocVien }[S.tab];
+  const v = { tongquan:vTongQuan, diemdanh:vDiemDanh, lich:vLich, hocphi:vHocPhi, hocvien:vHocVien, caidat:vCaiDat }[S.tab];
   $('view').innerHTML = v();
   const wb = { tongquan:null, diemdanh:wireDiemDanh, lich:null, hocphi:null, hocvien:wireHocVien }[S.tab];
   if (wb) wb();
@@ -393,6 +431,100 @@ function vTongQuan() {
   <div class="panel"><h3>${hic(I.trend)}Học phí 6 tháng gần nhất</h3><div class="sub">Tổng tiền đã thu mỗi tháng (triệu đồng)</div><div class="bars">${barsHP}</div></div>
   <div class="panel"><h3>${hic(I.chart)}Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>`;
 }
+
+/* ================= CÀI ĐẶT ================= */
+const CFG = {
+  get ten() { try { return localStorage.getItem('tt_ten') || 'Trung Tâm Dạy Thêm'; } catch(e) { return 'Trung Tâm Dạy Thêm'; } },
+  set ten(v) { try { localStorage.setItem('tt_ten', v); } catch(e) {} },
+  get pin() { try { return localStorage.getItem('tt_pin') || ''; } catch(e) { return ''; } },
+  set pin(v) { try { if (v) localStorage.setItem('tt_pin', v); else localStorage.removeItem('tt_pin'); } catch(e) {} }
+};
+function applyTen() { const t = CFG.ten; $('appTitle').textContent = t; const lt = $('lockTitle'); if (lt) lt.textContent = t; document.title = t; }
+function vCaiDat() {
+  const feeRows = D.lopHoc.map(c => `
+    <div class="lrow"><span><b style="color:var(--ink)">${esc(c.tenLop)}</b><br><small style="color:var(--muted)">${esc(c.maLop)}</small></span>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:8px"><b style="color:var(--p1)">${money(c.hocPhi)} đ</b><button class="mini" onclick="editFee('${c.maLop}')">Sửa</button></span></div>`).join('');
+  const schedByCls = D.lopHoc.map(c => {
+    const evs = D.lichHoc.filter(l => l.maLop === c.maLop).sort((a,b) => normTime(a.gioBatDau).localeCompare(normTime(b.gioBatDau)));
+    if (!evs.length) return '';
+    const rows = evs.map(e => `<div class="lrow"><b>${thuFull(e.thu)}</b><span><b style="color:var(--ink)">${normTime(e.gioBatDau)} - ${normTime(e.gioKetThuc)}</b></span></div>`).join('');
+    return `<div class="secttl">${esc(c.tenLop)}</div><div class="panel" style="margin-top:0;padding:4px 14px">${rows}</div>`;
+  }).join('');
+  return `
+  <div class="sethead"><button class="backbtn" onclick="go('tongquan')">‹</button><b>Cài đặt</b><span style="width:38px"></span></div>
+  <div class="secttl" style="margin-top:0">Thông tin trung tâm</div>
+  <div class="panel"><label>Tên hiển thị trên banner</label>
+    <div class="setrow"><input id="cfgTen" value="${esc(CFG.ten)}" placeholder="VD: Lớp học cô Hoa"><button class="btn" onclick="saveTen()">Lưu</button></div></div>
+  <div class="secttl">Học phí các lớp</div>
+  <div class="panel" style="padding:4px 16px">${feeRows || '<div class="empty">Chưa có lớp</div>'}</div>
+  <div class="secttl">Lịch học các lớp</div>
+  ${schedByCls || '<div class="empty">Chưa có lịch</div>'}
+  <div class="secttl">Bảo mật</div>
+  <div class="panel" style="padding:4px 16px"><div class="lrow"><span><b style="color:var(--ink)">Mật khẩu mở app</b><br><small style="color:var(--muted)">${CFG.pin ? 'Đang bật — mở app sẽ hỏi mật khẩu' : 'Đang tắt'}</small></span>
+    <span style="margin-left:auto"><button class="mini" onclick="pinDialog()">${CFG.pin ? 'Đổi / Tắt' : 'Đặt mật khẩu'}</button></span></div></div>
+  <div class="sub" style="text-align:center;margin:18px 0 6px">Cài đặt lưu trên máy này</div>`;
+}
+function saveTen() {
+  const v = $('cfgTen').value.trim();
+  if (!v) { toast('Nhập tên trung tâm'); return; }
+  CFG.ten = v; applyTen(); toast('Đã đổi tên thành công');
+}
+function editFee(maLop) {
+  const c = clsOf(maLop);
+  openModal(`<h3>Học phí · ${esc(c.tenLop)}</h3>
+    <label>Học phí mỗi tháng (đ)</label><input id="feeAmt" type="number" inputmode="numeric" value="${+c.hocPhi || 0}">
+    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn" style="flex:2" onclick="doSaveFee('${maLop}')">Lưu</button></div>`);
+}
+async function doSaveFee(maLop) {
+  const c = clsOf(maLop), amt = +$('feeAmt').value || 0;
+  try {
+    if (!DEMO) await api('saveClass', [{ maLop, tenLop:c.tenLop, giaoVien:c.giaoVien, phong:c.phong, hocPhi:amt, lichHoc:c.lichHoc }]);
+    c.hocPhi = amt; closeModal(); toast('Đã cập nhật học phí'); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
+}
+function pinDialog() {
+  if (CFG.pin) {
+    openModal(`<h3>Mật khẩu mở app</h3>
+      <label>Mật khẩu hiện tại</label><input id="pinOld" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <label>Mật khẩu mới (4 số — để trống để tắt)</label><input id="pinNew" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
+      <button class="btn" style="flex:2" onclick="doPinChange()">Lưu</button></div>`);
+  } else {
+    openModal(`<h3>Đặt mật khẩu mở app</h3><div class="sub">Mỗi lần mở app sẽ hỏi mật khẩu 4 số này.</div>
+      <label>Mật khẩu mới (4 số)</label><input id="pinNew" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <label>Nhập lại mật khẩu</label><input id="pinNew2" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
+      <button class="btn" style="flex:2" onclick="doPinSet()">Lưu</button></div>`);
+  }
+}
+function doPinSet() {
+  const a = $('pinNew').value.trim(), b = $('pinNew2').value.trim();
+  if (!/^\d{4}$/.test(a)) { toast('Mật khẩu gồm 4 số'); return; }
+  if (a !== b) { toast('Nhập lại chưa khớp'); return; }
+  CFG.pin = a; closeModal(); toast('Đã bật mật khẩu mở app'); render();
+}
+function doPinChange() {
+  const o = $('pinOld').value.trim(), n = $('pinNew').value.trim();
+  if (o !== CFG.pin) { toast('Mật khẩu hiện tại sai'); return; }
+  if (n && !/^\d{4}$/.test(n)) { toast('Mật khẩu mới gồm 4 số'); return; }
+  CFG.pin = n; closeModal(); toast(n ? 'Đã đổi mật khẩu' : 'Đã tắt mật khẩu'); render();
+}
+let _pinBuf = '';
+function showLock() { _pinBuf = ''; paintDots(); $('lockHello').textContent = $('helloLine').textContent; $('lock').hidden = false; }
+function paintDots() { document.querySelectorAll('.pindots i').forEach((el, i) => el.classList.toggle('on', i < _pinBuf.length)); }
+function pinPress(k) {
+  if ($('lock').hidden) return;
+  if (k === 'del') _pinBuf = _pinBuf.slice(0, -1);
+  else if (_pinBuf.length < 4 && /^\d$/.test(k)) _pinBuf += k;
+  else return;
+  paintDots();
+  if (_pinBuf.length === 4) setTimeout(() => {
+    if (_pinBuf === CFG.pin) { $('lock').hidden = true; _pinBuf = ''; paintDots(); }
+    else { _pinBuf = ''; paintDots(); const c = document.querySelector('.lock-card'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); toast('Sai mật khẩu'); }
+  }, 180);
+}
+function lockReset() { if (confirm('Quên mật khẩu? Bấm OK để tắt mật khẩu mở app.')) { CFG.pin = ''; $('lock').hidden = true; toast('Đã tắt mật khẩu'); render(); } }
 
 /* ---------- 2. ĐIỂM DANH ---------- */
 let _attKey = '';
@@ -576,7 +708,7 @@ async function doAddStu() {
   $('todayLine').textContent = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][d.getDay()] + ', ' + pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
   const h = d.getHours();
   $('helloLine').textContent = (h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
-  load().then(render).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
+  load().then(() => { render(); applyTen(); if (CFG.pin) showLock(); }).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
 })();
 </script>
 </body>
