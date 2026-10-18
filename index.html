@@ -737,8 +737,9 @@ function vHocVien() {
   const chips = [`<button class="chip ${S.fcls==='all'?'on':''}" onclick="S.fcls='all';render()">Tất cả</button>`]
     .concat(D.lopHoc.map(c => `<button class="chip ${S.fcls===c.maLop?'on':''}" onclick="S.fcls='${c.maLop}';render()">${esc(c.tenLop)}</button>`)).join('');
   const list = hvs.map(h => { const c = clsOf(h.maLop);
+    const title = S.fcls === 'all' ? `${esc(c.tenLop||'')} - ${esc(h.hoTen)}` : esc(h.hoTen);
     return `<div class="srow" onclick="openStu('${h.maHV}')"><div class="av">${esc(initials(h.hoTen))}</div>
-      <div class="inf"><b>${esc(h.hoTen)}</b><span>${esc(c.tenLop||'')} · ${esc(h.sdt||'')}</span></div><span style="color:var(--muted)">›</span></div>`; }).join('');
+      <div class="inf"><b>${title}</b><span>${esc(h.sdt||'—')}</span></div><span style="color:var(--muted)">›</span></div>`; }).join('');
   return `
     <div class="searchbar">${hic(I.search)}<input placeholder="Tìm tên, SĐT..." value="${esc(S.q)}" oninput="S.q=this.value;renderQ(this)"></div>
     <div class="chips">${chips}</div>
