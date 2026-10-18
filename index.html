@@ -719,7 +719,7 @@ function setAtt(ma, tt) { S.att[ma].tt = S.att[ma].tt === tt ? 'Có mặt' : tt;
 async function saveAtt() {
   const records = Object.keys(S.att).map(maHV => ({ maHV, trangThai:S.att[maHV].tt, ghiChu:'' }));
   try { if (!DEMO) await api('takeAttendance', [{ ngay:S.date, maLop:S.cls, records }]);
-    else records.forEach(r => { const i = D.diemDanh.findIndex(d => d.ngay===S.date && d.maLop===S.cls && d.maHV===r.maHV);
+    records.forEach(r => { const i = D.diemDanh.findIndex(d => d.ngay===S.date && d.maLop===S.cls && d.maHV===r.maHV);
       if (i>=0) D.diemDanh[i] = {ngay:S.date,maLop:S.cls,maHV:r.maHV,trangThai:r.trangThai,ghiChu:''};
       else D.diemDanh.push({ngay:S.date,maLop:S.cls,maHV:r.maHV,trangThai:r.trangThai,ghiChu:''}); });
     toast('Đã lưu điểm danh ' + fmtDateVI(S.date)); render();
@@ -793,9 +793,9 @@ function thuHP(maHV) {
 async function doThuHP(maHV) {
   const amt = +$('hpAmt').value || 0, how = $('hpHow').value;
   try { if (!DEMO) await api('collectTuition', [{ maHV, thang:S.month, soTien:amt, hinhThuc:how }]);
-    else { const i = D.hocPhi.findIndex(x => x.maHV===maHV && normYM(x.thang)===S.month);
-      const rec = {maHV, thang:S.month, soTien:amt, trangThai:'Đã đóng', ngayDong:todayStr(), hinhThuc:how};
-      if (i>=0) D.hocPhi[i] = rec; else D.hocPhi.push(rec); }
+    const i = D.hocPhi.findIndex(x => x.maHV===maHV && normYM(x.thang)===S.month);
+    const rec = {maHV, thang:S.month, soTien:amt, trangThai:'Đã đóng', ngayDong:todayStr(), hinhThuc:how};
+    if (i>=0) D.hocPhi[i] = rec; else D.hocPhi.push(rec);
     closeModal(); toast('Đã thu ' + money(amt) + ' đ'); render();
   } catch(e) { toast('Lỗi: ' + e.message); }
 }
