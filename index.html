@@ -7,18 +7,18 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --p1:#7c3aed; --p2:#a855f7; --p3:#ec4899; --p4:#fb923c;
-  --grad:linear-gradient(135deg,#7c3aed 0%,#a855f7 40%,#ec4899 75%,#fb923c 100%);
-  --grad-soft:linear-gradient(135deg,#ede9fe,#fce7f3 60%,#ffedd5);
+  --p1:#e8590c; --p2:#f76707; --p3:#fa5252; --p4:#fab005;
+  --grad:linear-gradient(135deg,#ff6a00 0%,#ff922b 45%,#ff5e62 100%);
+  --grad-soft:linear-gradient(135deg,#fff1e0,#ffe3c2 60%,#ffd0a0);
   --ink:#241d3d; --muted:#8f8aa5; --bg:#f4f2fa; --card:#fff;
   --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2; --amber:#d97706; --amber-bg:#fef3c7;
-  --r:20px; --sh:0 8px 24px rgba(124,58,237,.10);
+  --r:20px; --sh:0 8px 24px rgba(247,103,7,.12);
 }
 html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#d9d2ec;color:var(--ink);font-size:15px;display:flex;justify-content:center}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f3e2c8;color:var(--ink);font-size:15px;display:flex;justify-content:center}
 /* ===== phone frame ===== */
 .phone{width:100%;max-width:430px;min-height:100dvh;background:var(--bg);position:relative;overflow:clip}
-@media(min-width:480px){.phone{margin:0;box-shadow:0 0 60px rgba(60,20,120,.25)}}
+@media(min-width:480px){.phone{margin:0;box-shadow:0 0 60px rgba(150,70,0,.25)}}
 /* ===== appbar ===== */
 .appbar{background:var(--grad);color:#fff;padding:22px 18px 30px;border-radius:0 0 30px 30px;position:relative;overflow:hidden}
 .appbar::before,.appbar::after{content:'';position:absolute;border-radius:50%;filter:blur(2px);opacity:.35}
@@ -37,8 +37,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
 .kpi{background:var(--card);border-radius:var(--r);padding:13px 12px;box-shadow:var(--sh);position:relative;overflow:hidden}
 .kpi .ic{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff;margin-bottom:9px}
-.g1{background:linear-gradient(135deg,#7c3aed,#a855f7)} .g2{background:linear-gradient(135deg,#ec4899,#fb923c)}
-.g3{background:linear-gradient(135deg,#0ea5e9,#6366f1)} .g4{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.g1{background:linear-gradient(135deg,#f76707,#ff922b)} .g2{background:linear-gradient(135deg,#fa5252,#ff8787)}
+.g3{background:linear-gradient(135deg,#fab005,#ffd43b)} .g4{background:linear-gradient(135deg,#12b886,#38d9a9)}
 .kpi .lb{font-size:12px;color:var(--muted)}
 .kpi .vl{font-size:21px;font-weight:800;margin:2px 0 4px}
 .kpi .vl small{font-size:12px;font-weight:600;color:var(--muted)}
@@ -55,14 +55,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
 .bval{font-size:10px;font-weight:700;color:var(--p1)}
 .bar{width:100%;max-width:38px;border-radius:9px 9px 5px 5px;background:linear-gradient(180deg,var(--p2),var(--p3));min-height:6px;position:relative;transition:height .4s}
-.bcol.cur .bar{background:var(--grad);box-shadow:0 4px 14px rgba(168,85,247,.45)}
+.bcol.cur .bar{background:var(--grad);box-shadow:0 4px 14px rgba(247,103,7,.45)}
 .blb{font-size:10.5px;color:var(--muted);font-weight:600}
 .bcol.cur .blb{color:var(--p1);font-weight:800}
 /* ===== chips (class selector) ===== */
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid #e4e0f2;background:#fff;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
-.chip.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(168,85,247,.4)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(247,103,7,.4)}
 /* ===== attendance ===== */
 .sumline{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--sh);margin:10px 0;font-size:14px;font-weight:600}
 .sumline .n{background:var(--grad);color:#fff;border-radius:12px;padding:5px 12px;font-size:13px}
@@ -77,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .tg.on-vang{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .tg.on-nghi{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
 .stickybtn{position:sticky;bottom:96px;z-index:5;margin-top:12px}
-.btn{background:var(--grad);color:#fff;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 8px 20px rgba(168,85,247,.4)}
+.btn{background:var(--grad);color:#fff;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 8px 20px rgba(247,103,7,.4)}
 .btn:active{transform:scale(.98)}
 /* ===== schedule ===== */
 .weekstrip{display:flex;gap:6px;margin-bottom:12px}
@@ -111,11 +111,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .searchbar input{border:0;outline:0;font-size:15px;flex:1;background:none;color:var(--ink)}
 .srow{background:var(--card);border-radius:16px;padding:11px 12px;box-shadow:var(--sh);margin-bottom:9px;display:flex;align-items:center;gap:10px;cursor:pointer}
 /* ===== tabbar ===== */
-.tabbar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(406px,calc(100% - 24px));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 34px rgba(60,20,120,.22);display:flex;padding:8px;z-index:50}
+.tabbar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(406px,calc(100% - 24px));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 34px rgba(150,70,0,.20);display:flex;padding:8px;z-index:50}
 .tab{flex:1;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:10px;font-weight:600}
 .tab .ti{font-size:20px;width:44px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:14px;transition:.2s}
 .tab.on{color:var(--p1)}
-.tab.on .ti{background:var(--grad);box-shadow:0 4px 12px rgba(168,85,247,.45)}
+.tab.on .ti{background:var(--grad);box-shadow:0 4px 12px rgba(247,103,7,.45)}
 .tab.on .ti span{filter:grayscale(1) brightness(10)}
 /* ===== modal / toast ===== */
 .modal{position:fixed;inset:0;z-index:100;display:none}
@@ -179,9 +179,12 @@ function fmtDateVI(ds) {
 }
 const THU_NAMES = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
 const initials = name => name.trim().split(/\s+/).slice(-2).map(w => w[0]).join('').toUpperCase();
-/* Chuẩn hóa "tháng" từ server: chấp nhận cả 'yyyy-MM' lẫn chuỗi Date kiểu "Thu Oct 01 2026..." */
-const normYM = s => { s = String(s || ''); const m = /^(\d{4})-(\d{2})/.exec(s); if (m) return m[1] + '-' + m[2];
-  const d = new Date(s); return isNaN(d) ? '' : ymOf(d); };
+/* Chuẩn hóa "tháng" từ server: chấp nhận cả 'yyyy-MM' lẫn chuỗi Date kiểu "Thu Oct 01 2026...".
+ * Parse trực tiếp chuỗi, KHÔNG qua new Date() để tránh lệch tháng do múi giờ. */
+const MON2N = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+const normYM = s => { s = String(s || ''); let m = /^(\d{4})-(\d{2})/.exec(s); if (m) return m[1] + '-' + m[2];
+  m = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+(\d{4})/.exec(s);
+  return m ? m[2] + '-' + MON2N[m[1]] : ''; };
 
 let D = null, DEMO = false;
 const S = { tab:'tongquan', month:curYM(), cls:'L01', date:todayStr(), dayIdx:(new Date().getDay()+6)%7, feeF:'all', q:'', fcls:'all', att:{} };
@@ -289,7 +292,7 @@ function vTongQuan() {
   const barsHP = last6.map(m => { const s = monthStats(m); const h = Math.max(5, Math.round(s.thu/hpMax*100));
     return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.thu?Math.round(s.thu/1e6)+'tr':''}</div><div class="bar" style="height:${h}%"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   const barsDD = last6.map(m => { const s = monthStats(m); const h = Math.max(5, Math.round(s.tyle));
-    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.tyle?s.tyle.toFixed(0)+'%':''}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,#0ea5e9,#6366f1)"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
+    return `<div class="bcol ${m===S.month?'cur':''}"><div class="bval">${s.tyle?s.tyle.toFixed(0)+'%':''}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,#12b886,#38d9a9)"></div><div class="blb">T${+m.slice(5,7)}</div></div>`; }).join('');
   return mnavHTML() + `
   <div class="kpis">
     <div class="kpi"><div class="ic g1">👥</div><div class="lb">Học viên</div><div class="vl">${st.hv}</div>${deltaHTML(st.hv, pv.hv, '')}</div>
