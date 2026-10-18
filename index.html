@@ -636,11 +636,13 @@ function vDiemDanh() {
     <div class="secttl">Chọn lớp</div>
     <div class="chips">${chips}</div>
     <div class="sumline"><span>Danh sách <b>${esc(clsOf(S.cls).tenLop||'')}</b></span><span class="n">Có mặt ${co}/${hvs.length}</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="mini" style="flex:1;padding:10px" onclick="allAtt('co')">✓ Cả lớp có mặt</button><button class="mini" style="flex:1;padding:10px" onclick="allAtt('reset')">↺ Chọn lại</button></div>
     ${rows || '<div class="empty">Chưa có học viên trong lớp này</div>'}
     <div class="stickybtn"><button class="btn" onclick="saveAtt()">${I.save}Lưu điểm danh</button></div>`;
 }
 function wireDiemDanh() {}
 function selCls(ma) { S.cls = ma; render(); }
+function allAtt(mode) { if (mode === 'reset') loadAtt(); else Object.keys(S.att).forEach(ma => S.att[ma].tt = 'Có mặt'); render(); }
 function setAtt(ma, tt) { S.att[ma].tt = S.att[ma].tt === tt ? 'Có mặt' : tt; render(); }
 async function saveAtt() {
   const records = Object.keys(S.att).map(maHV => ({ maHV, trangThai:S.att[maHV].tt, ghiChu:'' }));
@@ -759,7 +761,7 @@ function openStu(maHV) {
     <div class="kv"><span>Ngày sinh</span><b>${dmy(h.ngaySinh)}</b></div>
     ${h.ghiChu?`<div class="kv"><span>Ghi chú</span><b>${esc(h.ghiChu)}</b></div>`:''}
     <div class="secttl">Lịch sử học phí</div><div class="hp-hist">${hrows}</div>
-    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Đóng</button></div>`);
+    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Đóng</button><button class="btn" style="flex:2" onclick="editStu('${maHV}')">Sửa thông tin</button></div>`);
 }
 function addStu() {
   openModal(`<h3>Thêm học viên</h3>
@@ -771,6 +773,27 @@ function addStu() {
       <input id="nsDob" type="date" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer" onchange="var l=this.previousElementSibling;l.textContent=dmy(this.value);l.style.color='var(--ink)'"></label>
     <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn" style="flex:2" onclick="doAddStu()">Lưu</button></div>`);
+}
+function editStu(maHV) {
+  const h = hvOf(maHV);
+  openModal(`<h3>Sửa học viên</h3>
+    <label>Họ tên *</label><input id="esName" value="${esc(h.hoTen)}">
+    <label>SĐT</label><input id="esPhone" value="${esc(h.sdt||'')}">
+    <label>Lớp</label><select id="esCls">${D.lopHoc.map(c=>`<option value="${c.maLop}" ${c.maLop===h.maLop?'selected':''}>${esc(c.tenLop)}</option>`).join('')}</select>
+    <label>Ngày sinh</label><label style="position:relative;display:block;cursor:pointer">
+      <div id="esDobLabel" style="width:100%;padding:11px 13px;border:1.5px solid #ece7f7;border-radius:12px;font-size:14px;color:${h.ngaySinh?'var(--ink)':'var(--muted)'}">${h.ngaySinh?dmy(h.ngaySinh):'Chọn ngày sinh'}</div>
+      <input id="esDob" type="date" value="${(h.ngaySinh||'').slice(0,10)}" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer" onchange="var l=this.previousElementSibling;l.textContent=dmy(this.value);l.style.color='var(--ink)'"></label>
+    <div class="mrow"><button class="btn-ghost" onclick="openStu('${maHV}')">Hủy</button>
+    <button class="btn" style="flex:2" onclick="doEditStu('${maHV}')">Lưu</button></div>`);
+}
+async function doEditStu(maHV) {
+  const hoTen = $('esName').value.trim();
+  if (!hoTen) { toast('Nhập họ tên đã'); return; }
+  const payload = { maHV, hoTen, sdt:$('esPhone').value.trim(), maLop:$('esCls').value, ngaySinh:$('esDob').value || hvOf(maHV).ngaySinh, ghiChu:hvOf(maHV).ghiChu||'' };
+  try { if (!DEMO) await api('saveStudent', [payload]);
+    Object.assign(hvOf(maHV), payload);
+    closeModal(); toast('Đã cập nhật ' + hoTen); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
 }
 async function doAddStu() {
   const s = { hoTen:$('nsName').value.trim(), sdt:$('nsPhone').value.trim(), maLop:$('nsCls').value, ngaySinh:$('nsDob').value, ghiChu:'' };
