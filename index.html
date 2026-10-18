@@ -315,11 +315,16 @@ const normYM = s => { s = String(s || ''); let m = /^(\d{4})-(\d{2})/.exec(s); i
 let D = null, DEMO = false;
 const S = { tab:'tongquan', month:curYM(), cls:'L01', date:todayStr(), dayIdx:(new Date().getDay()+6)%7, feeF:'all', q:'', fcls:'all', att:{} };
 
-async function api(fn, args) {
-  const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({fn, args:args||[]}) });
-  const j = await r.json();
-  if (!j.ok) throw new Error(j.error || 'Lỗi server');
-  return j.data;
+function api(fn, args) {
+  args = args || [];
+  if (window.google && google.script && google.script.run && google.script.run[fn]) {
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler(resolve)
+        .withFailureHandler(err => reject(new Error((err && err.message) || err)))[fn](...args);
+    });
+  }
+  return fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({fn, args}) })
+    .then(r => r.json()).then(j => { if (!j.ok) throw new Error(j.error || 'Lỗi server'); return j.data; });
 }
 async function load() {
   try {
