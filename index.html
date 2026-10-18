@@ -714,7 +714,7 @@ function vDiemDanh() {
 }
 function wireDiemDanh() {}
 function selCls(ma) { S.cls = ma; render(); }
-function allAtt(mode) { if (mode === 'reset') loadAtt(); else Object.keys(S.att).forEach(ma => S.att[ma].tt = 'Có mặt'); render(); }
+function allAtt(mode) { if (mode === 'reset') { _attKey = ''; loadAtt(); } else Object.keys(S.att).forEach(ma => S.att[ma].tt = 'Có mặt'); render(); }
 function setAtt(ma, tt) { S.att[ma].tt = S.att[ma].tt === tt ? 'Có mặt' : tt; render(); }
 async function saveAtt() {
   const records = Object.keys(S.att).map(maHV => ({ maHV, trangThai:S.att[maHV].tt, ghiChu:'' }));
