@@ -170,6 +170,9 @@ input:focus,select:focus{border-color:var(--p2)}
 .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #eee9f8;font-size:14px}
 .kv span{color:var(--muted)}
 .warnbox{background:var(--red-bg);color:var(--red);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;margin:8px 0}
+.sched-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f4f1fa}
+.sched-row select,.sched-row input[type=time]{border:1.5px solid #ece7f7;border-radius:10px;padding:8px 6px;font-size:13px;background:#fff;color:var(--ink)}
+.sched-row select{flex:1.3;min-width:0} .sched-row input{flex:1;min-width:0}
 .hp-hist{margin-top:6px}
 .hp-hist .hrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f4f1fa;font-size:13.5px}
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);background:#241d3d;color:#fff;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:92%;box-shadow:0 10px 30px rgba(0,0,0,.3)}
@@ -438,7 +441,7 @@ function render() {
   if (wb) wb();
   window.scrollTo(0, 0);
 }
-function go(k) { S.tab = k; render(); }
+function go(k) { if (k === 'caidat') S.sched = null; S.tab = k; render(); }
 function mnavHTML() {
   return `<div class="mnav"><button onclick="mnav(-1)">‹</button><b>${monthName(S.month)}</b><button onclick="mnav(1)">›</button></div>`;
 }
@@ -518,15 +521,40 @@ function applyTheme() {
 }
 function setTheme(t) { CFG.theme = t; applyTheme(); render(); toast('Đã đổi màu giao diện'); }
 function applyTen() { const t = CFG.ten; $('appTitle').textContent = t; const lt = $('lockTitle'); if (lt) lt.textContent = t; document.title = t; }
+const DAYS = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+function schedGet(maLop) {
+  if (!S.sched) S.sched = {};
+  if (!S.sched[maLop]) S.sched[maLop] = D.lichHoc.filter(l => l.maLop === maLop)
+    .map(l => ({ thu: l.thu, b: normTime(l.gioBatDau) || '17:00', e: normTime(l.gioKetThuc) || '18:30' }));
+  return S.sched[maLop];
+}
+function schedAdd(maLop) { schedGet(maLop).push({ thu: 'Thứ 2', b: '17:00', e: '18:30' }); render(); }
+function schedDel(maLop, i) { schedGet(maLop).splice(i, 1); render(); }
+function schedSet(maLop, i, k, v) { schedGet(maLop)[i][k] = v; }
+async function schedSave(maLop) {
+  const ss = schedGet(maLop).filter(s => s.thu);
+  try {
+    if (!DEMO) await api('saveSchedule', [{ maLop, sessions: ss.map(s => ({ thu: s.thu, gioBatDau: s.b, gioKetThuc: s.e })) }]);
+    D.lichHoc = D.lichHoc.filter(l => l.maLop !== maLop)
+      .concat(ss.map(s => ({ maLop, thu: s.thu, gioBatDau: s.b, gioKetThuc: s.e, phong: '', giaoVien: '' })));
+    clsOf(maLop).lichHoc = ss.map(s => s.thu).join(', ');
+    toast('Đã lưu lịch ' + clsOf(maLop).tenLop); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
+}
 function vCaiDat() {
   const feeRows = D.lopHoc.map(c => `
     <div class="lrow"><span><b style="color:var(--ink)">${esc(c.tenLop)}</b><br><small style="color:var(--muted)">${esc(c.maLop)}</small></span>
-    <span style="margin-left:auto;display:flex;align-items:center;gap:8px"><b style="color:var(--p1)">${money(c.hocPhi)} đ</b><button class="mini" onclick="editFee('${c.maLop}')">Sửa</button></span></div>`).join('');
+    <span style="margin-left:auto;display:flex;align-items:center;gap:8px"><b style="color:var(--p1)">${money(c.hocPhi)} đ</b><button class="mini" onclick="editFee('${c.maLop}')">Sửa</button><button class="mini" style="border-color:var(--red-bg);color:var(--red)" onclick="delCls('${c.maLop}')">Xóa</button></span></div>`).join('');
   const schedByCls = D.lopHoc.map(c => {
-    const evs = D.lichHoc.filter(l => l.maLop === c.maLop).sort((a,b) => normTime(a.gioBatDau).localeCompare(normTime(b.gioBatDau)));
-    if (!evs.length) return '';
-    const rows = evs.map(e => `<div class="lrow"><b>${thuFull(e.thu)}</b><span><b style="color:var(--ink)">${normTime(e.gioBatDau)} - ${normTime(e.gioKetThuc)}</b></span></div>`).join('');
-    return `<div class="secttl">${esc(c.tenLop)}</div><div class="panel" style="margin-top:0;padding:4px 14px">${rows}</div>`;
+    const ss = schedGet(c.maLop);
+    const rows = ss.map((s, i) => `
+      <div class="sched-row"><select onchange="schedSet('${c.maLop}',${i},'thu',this.value)">${DAYS.map(d => `<option${d === s.thu ? ' selected' : ''}>${d}</option>`).join('')}</select>
+      <input type="time" value="${s.b}" onchange="schedSet('${c.maLop}',${i},'b',this.value)"><span style="color:var(--muted)">–</span>
+      <input type="time" value="${s.e}" onchange="schedSet('${c.maLop}',${i},'e',this.value)">
+      <button class="mini" style="border-color:var(--red-bg);color:var(--red);padding:6px 10px" onclick="schedDel('${c.maLop}',${i})">✕</button></div>`).join('');
+    return `<div class="secttl" style="display:flex;justify-content:space-between;align-items:center">${esc(c.tenLop)}<button class="mini" onclick="schedAdd('${c.maLop}')">＋ Thêm buổi</button></div>
+    <div class="panel" style="margin-top:0">${rows || '<div class="empty">Chưa có buổi nào</div>'}
+    <button class="btn" style="margin-top:10px" onclick="schedSave('${c.maLop}')">Lưu lịch học</button></div>`;
   }).join('');
   return `
   <div class="sethead"><button class="backbtn" onclick="go('tongquan')">‹</button><b>Cài đặt</b><span style="width:38px"></span></div>
@@ -549,6 +577,18 @@ function saveTen() {
   const v = $('cfgTen').value.trim();
   if (!v) { toast('Nhập tên trung tâm'); return; }
   CFG.ten = v; applyTen(); toast('Đã đổi tên thành công');
+}
+async function delCls(maLop) {
+  const c = clsOf(maLop);
+  if (!confirm('Xóa lớp ' + c.tenLop + '?\nChỉ xóa được khi lớp không còn học viên.')) return;
+  try {
+    if (!DEMO) await api('deleteClass', [{ maLop }]);
+    else if (D.hocVien.some(h => h.maLop === maLop)) { toast('Lớp còn học viên, không xóa được'); return; }
+    D.lopHoc = D.lopHoc.filter(x => x.maLop !== maLop);
+    D.lichHoc = D.lichHoc.filter(x => x.maLop !== maLop);
+    if (S.sched) delete S.sched[maLop];
+    toast('Đã xóa lớp ' + c.tenLop); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
 }
 function editFee(maLop) {
   const c = clsOf(maLop);
@@ -821,7 +861,8 @@ function editStu(maHV) {
       <div id="esDobLabel" style="width:100%;padding:11px 13px;border:1.5px solid #ece7f7;border-radius:12px;font-size:14px;color:${h.ngaySinh?'var(--ink)':'var(--muted)'}">${h.ngaySinh?dmy(h.ngaySinh):'Chọn ngày sinh'}</div>
       <input id="esDob" type="date" value="${(h.ngaySinh||'').slice(0,10)}" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer" onchange="var l=this.previousElementSibling;l.textContent=dmy(this.value);l.style.color='var(--ink)'"></label>
     <div class="mrow"><button class="btn-ghost" onclick="openStu('${maHV}')">Hủy</button>
-    <button class="btn" style="flex:2" onclick="doEditStu('${maHV}')">Lưu</button></div>`);
+    <button class="btn" style="flex:2" onclick="doEditStu('${maHV}')">Lưu</button></div>
+    <button class="btn-ghost" style="width:100%;margin-top:10px;color:var(--red)" onclick="delStu('${maHV}')">Xóa học viên</button>`);
 }
 async function doEditStu(maHV) {
   const hoTen = $('esName').value.trim();
@@ -830,6 +871,17 @@ async function doEditStu(maHV) {
   try { if (!DEMO) await api('saveStudent', [payload]);
     Object.assign(hvOf(maHV), payload);
     closeModal(); toast('Đã cập nhật ' + hoTen); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
+}
+async function delStu(maHV) {
+  const h = hvOf(maHV);
+  if (!confirm('Xóa ' + h.hoTen + ' khỏi trung tâm?\nToàn bộ điểm danh và học phí của bạn này cũng bị xóa.')) return;
+  try {
+    if (!DEMO) await api('deleteStudent', [{ maHV }]);
+    D.hocVien = D.hocVien.filter(x => x.maHV !== maHV);
+    D.diemDanh = D.diemDanh.filter(x => x.maHV !== maHV);
+    D.hocPhi = D.hocPhi.filter(x => x.maHV !== maHV);
+    closeModal(); toast('Đã xóa ' + h.hoTen); render();
   } catch(e) { toast('Lỗi: ' + e.message); }
 }
 async function doAddStu() {
