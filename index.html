@@ -2,10 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Trung Tâm Dạy Thêm</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
 :root{
   --p1:#e8590c; --p2:#f76707; --p3:#fa5252; --p4:#fab005;
   --grad:linear-gradient(135deg,#ff6a00 0%,#ff922b 45%,#ff5e62 100%);
@@ -444,6 +445,12 @@ function mnavHTML() {
 function mnav(d) { const n = addMonths(S.month, d); if (n <= curYM()) { S.month = n; render(); } }
 
 /* ---------- 1. TỔNG QUAN ---------- */
+function tomorrowInfo() {
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  const thu = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][t.getDay()];
+  const list = D.lichHoc.filter(l => l.thu === thu);
+  return { thu, d: t, list };
+}
 function topAbsent(ym, limit) {
   const cnt = {};
   D.diemDanh.forEach(d => { if ((d.ngay || '').slice(0, 7) === ym && d.trangThai === 'Vắng mặt') cnt[d.maHV] = (cnt[d.maHV] || 0) + 1; });
@@ -468,6 +475,12 @@ function vTongQuan() {
     <div class="kpi"><div class="ic g3">${I.check}</div><div class="lb">Tỷ lệ điểm danh</div><div class="vl">${st.tyle.toFixed(1)}<small> %</small></div>${deltaHTML(+st.tyle.toFixed(1), +pv.tyle.toFixed(1), '%')}</div>
     <div class="kpi"><div class="ic g4">${I.home}</div><div class="lb">Lớp đang mở</div><div class="vl">${st.lop}</div><span class="delta flat">${D.lopHoc.map(c=>c.tenLop).join(' · ')}</span></div>
   </div>
+  ${(() => { const tm = tomorrowInfo(); if (!tm.list.length) return '';
+    const dstr = tm.d.getDate() + '/' + (tm.d.getMonth() + 1);
+    return `<div class="panel" style="background:var(--grad-soft);border:1.5px dashed var(--p2);margin-bottom:12px">
+      <div style="display:flex;gap:12px;align-items:center"><div class="h3-ic" style="margin:0">${I.bell}</div>
+      <div><b>Ngày mai (${tm.thu}, ${dstr}) có ${tm.list.length} buổi dạy</b>
+      <div class="sub" style="margin:2px 0 0">${tm.list.map(l => esc(clsOf(l.maLop).tenLop || '') + ' ' + normTime(l.gioBatDau)).join(' · ')}</div></div></div></div>`; })()}
   <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><h3>${hic(I.bell)}Lớp sắp diễn ra</h3><button class="linklike" onclick="go('lich')">Xem tất cả</button></div><div class="sub">Các buổi học gần nhất</div>${upcomingSessions(4).map(u => { const n = D.hocVien.filter(h => h.maLop === u.maLop).length; return `
     <div class="upcard"><div><div class="upday">${dayLabelFull(u.date)}</div>
       <div class="upname">${esc(u.ten)}</div>
