@@ -511,7 +511,7 @@ function vCaiDat() {
   <div class="secttl">Thông tin trung tâm</div>
   <div class="panel"><label>Tên hiển thị trên banner</label>
     <div class="setrow"><input id="cfgTen" value="${esc(CFG.ten)}" placeholder="VD: Lớp học cô Hoa"><button class="btn" onclick="saveTen()">Lưu</button></div></div>
-  <div class="secttl">Học phí các lớp</div>
+  <div class="secttl" style="display:flex;justify-content:space-between;align-items:center">Học phí các lớp<button class="mini" onclick="addClass()">＋ Thêm lớp</button></div>
   <div class="panel" style="padding:4px 16px">${feeRows || '<div class="empty">Chưa có lớp</div>'}</div>
   <div class="secttl">Lịch học các lớp</div>
   ${schedByCls || '<div class="empty">Chưa có lịch</div>'}
@@ -531,6 +531,28 @@ function editFee(maLop) {
     <label>Học phí mỗi tháng (đ)</label><input id="feeAmt" type="number" inputmode="numeric" value="${+c.hocPhi || 0}">
     <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn" style="flex:2" onclick="doSaveFee('${maLop}')">Lưu</button></div>`);
+}
+function addClass() {
+  let n = 1;
+  D.lopHoc.forEach(c => { const m = /^L(\d+)$/.exec(c.maLop || ''); if (m) n = Math.max(n, +m[1] + 1); });
+  const maLop = 'L' + String(n).padStart(2, '0');
+  openModal(`<h3>Thêm lớp mới</h3>
+    <div class="kv"><span>Mã lớp</span><b>${maLop}</b></div>
+    <label>Tên lớp *</label><input id="ncTen" placeholder="VD: Toán 10">
+    <label>Học phí mỗi tháng (đ)</label><input id="ncFee" type="number" inputmode="numeric" value="1000000">
+    <label>Lịch học (ghi chú)</label><input id="ncLich" placeholder="VD: Thứ 2, Thứ 4 · 17:00-18:30">
+    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn" style="flex:2" onclick="doAddClass('${maLop}')">Lưu</button></div>`);
+}
+async function doAddClass(maLop) {
+  const ten = $('ncTen').value.trim();
+  if (!ten) { toast('Nhập tên lớp'); return; }
+  const payload = { maLop, tenLop: ten, giaoVien: '', phong: '', hocPhi: +$('ncFee').value || 0, lichHoc: $('ncLich').value.trim() };
+  try {
+    if (!DEMO) await api('saveClass', [payload]);
+    D.lopHoc.push(Object.assign({}, payload));
+    closeModal(); toast('Đã thêm lớp ' + ten); render();
+  } catch(e) { toast('Lỗi: ' + e.message); }
 }
 async function doSaveFee(maLop) {
   const c = clsOf(maLop), amt = +$('feeAmt').value || 0;
