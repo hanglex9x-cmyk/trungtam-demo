@@ -388,7 +388,7 @@ function vTongQuan() {
   <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><h3>${hic(I.bell)}Lớp sắp diễn ra</h3><button class="linklike" onclick="go('lich')">Xem tất cả</button></div><div class="sub">Các buổi học gần nhất</div>${upcomingSessions(4).map(u => { const n = D.hocVien.filter(h => h.maLop === u.maLop).length; return `
     <div class="upcard"><div><div class="upday">${dayLabelFull(u.date)}</div>
       <div class="upname">${esc(u.ten)}</div>
-      <div class="upmeta">${I.clock}<span>${esc(u.gio)}</span>${u.gv ? `<span class="dot">·</span><span>${esc(u.gv)}</span>` : ``}</div></div>
+      <div class="upmeta">${I.clock}<span>${esc(u.gio)}</span></div></div>
       <span class="upcount">${n} học viên</span></div>`; }).join('') || '<div class="empty">Chưa có lịch</div>'}</div>
   <div class="panel"><h3>${hic(I.trend)}Học phí 6 tháng gần nhất</h3><div class="sub">Tổng tiền đã thu mỗi tháng (triệu đồng)</div><div class="bars">${barsHP}</div></div>
   <div class="panel"><h3>${hic(I.chart)}Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>`;
@@ -458,7 +458,7 @@ function vLich() {
   const html = groups.map(g => {
     const isT = g.ds === tS;
     const rows = g.evs.map(e => { const c = clsOf(e.maLop);
-      return `<div class="lrow"><b>${normTime(e.gioBatDau)} - ${normTime(e.gioKetThuc)}</b><span><b style="color:var(--ink)">${esc(c.tenLop||e.maLop)}</b> · ${esc(e.giaoVien||c.giaoVien||'')}</span></div>`; }).join('');
+      return `<div class="lrow"><b>${normTime(e.gioBatDau)} - ${normTime(e.gioKetThuc)}</b><span><b style="color:var(--ink)">${esc(c.tenLop||e.maLop)}</b></span></div>`; }).join('');
     return `<div class="secttl" style="${isT ? 'color:var(--p1)' : ''}">${thuFull(THU_NAMES[g.i])}, ${pad2(g.d.getDate())}/${pad2(g.d.getMonth()+1)}${isT ? ' · hôm nay' : ''}</div>`
       + `<div class="panel" style="margin-top:0;padding:4px 14px">${rows}</div>`;
   }).join('');
