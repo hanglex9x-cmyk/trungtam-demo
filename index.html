@@ -243,7 +243,9 @@ const clsOf = ma => D.lopHoc.find(c => c.maLop === ma) || {};
 const hvOf = ma => D.hocVien.find(h => h.maHV === ma) || {};
 function monthStats(ym) {
   let thu = 0, phai = 0, tot = 0, co = 0;
-  D.hocPhi.forEach(h => { if (normYM(h.thang) === ym) { phai += +h.soTien || 0; if (h.trangThai === 'Đã đóng') thu += +h.soTien || 0; } });
+  const seen = new Set();
+  D.hocPhi.forEach(h => { if (normYM(h.thang) === ym) { seen.add(h.maHV); phai += +h.soTien || 0; if (h.trangThai === 'Đã đóng') thu += +h.soTien || 0; } });
+  D.hocVien.forEach(h => { if (!seen.has(h.maHV)) phai += +clsOf(h.maLop).hocPhi || 0; }); // chưa có dòng -> tính theo học phí lớp
   D.diemDanh.forEach(d => { if ((d.ngay||'').slice(0,7) === ym) { tot++; if (d.trangThai === 'Có mặt') co++; } });
   return { thu, phai, tyle: tot ? co/tot*100 : 0, hv: D.hocVien.length, lop: D.lopHoc.length };
 }
@@ -373,7 +375,7 @@ function vLich() {
 /* ---------- 4. HỌC PHÍ ---------- */
 function vHocPhi() {
   const rows = D.hocPhi.filter(h => normYM(h.thang) === S.month);
-  const byHV = {}; rows.forEach(h => byHV[h.maHV] = h);
+  const byHV = {}; rows.forEach(h => { if (!byHV[h.maHV] || h.trangThai === 'Đã đóng') byHV[h.maHV] = h; });
   let thu = 0, phai = 0, dong = 0;
   let hvs = D.hocVien.filter(h => {
     const r = byHV[h.maHV]; const stt = r ? r.trangThai : 'Chưa đóng';
