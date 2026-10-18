@@ -168,6 +168,7 @@ input:focus,select:focus{border-color:var(--p2)}
 .btn-ghost{background:#f1eff8;color:var(--ink);border:0;border-radius:16px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;flex:1}
 .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #eee9f8;font-size:14px}
 .kv span{color:var(--muted)}
+.warnbox{background:var(--red-bg);color:var(--red);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;margin:8px 0}
 .hp-hist{margin-top:6px}
 .hp-hist .hrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f4f1fa;font-size:13.5px}
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);background:#241d3d;color:#fff;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:92%;box-shadow:0 10px 30px rgba(0,0,0,.3)}
@@ -443,6 +444,12 @@ function mnavHTML() {
 function mnav(d) { const n = addMonths(S.month, d); if (n <= curYM()) { S.month = n; render(); } }
 
 /* ---------- 1. TỔNG QUAN ---------- */
+function topAbsent(ym, limit) {
+  const cnt = {};
+  D.diemDanh.forEach(d => { if ((d.ngay || '').slice(0, 7) === ym && d.trangThai === 'Vắng mặt') cnt[d.maHV] = (cnt[d.maHV] || 0) + 1; });
+  return Object.keys(cnt).map(maHV => ({ h: hvOf(maHV), vang: cnt[maHV] })).filter(x => x.h)
+    .sort((a, b) => b.vang - a.vang).slice(0, limit || 5);
+}
 function vTongQuan() {
   const st = monthStats(S.month), pv = monthStats(addMonths(S.month, -1));
   const last6 = []; for (let i = 5; i >= 0; i--) last6.push(addMonths(S.month, -i));
@@ -468,7 +475,12 @@ function vTongQuan() {
       <span class="upcount">${n} học viên</span></div>`; }).join('') || '<div class="empty">Chưa có lịch</div>'}</div>
   <div class="panel"><h3>${hic(I.trend)}Doanh thu theo tháng</h3><div class="sub">6 tháng gần nhất · tiền học phí đã thu (triệu đồng)</div><div class="bars">${barsRev}</div>
     <div class="legend"><span><i class="lg-t"></i>Đã thu</span><span><i class="lg-c"></i>Chưa thu</span><span class="lg-sum">6 tháng: <b>${money(revThu)} đ</b> / ${money(revPhai)} đ</span></div></div>
-  <div class="panel"><h3>${hic(I.chart)}Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>`;
+  <div class="panel"><h3>${hic(I.chart)}Tỷ lệ điểm danh 6 tháng</h3><div class="sub">% học viên có mặt theo tháng</div><div class="bars">${barsDD}</div></div>
+  <div class="secttl">Vắng nhiều nhất · ${monthName(S.month)}</div>
+  <div class="panel" style="padding:6px 16px">${topAbsent(S.month).map(x => `
+    <div class="srow" style="padding:10px 0" onclick="openStu('${x.h.maHV}')"><div class="av">${esc(initials(x.h.hoTen))}</div>
+    <div class="inf"><b>${esc(x.h.hoTen)}</b><span>${esc(clsOf(x.h.maLop).tenLop || '')}</span></div>
+    ${x.vang > 2 ? `<span class="badge b-chua">⚠ Vắng ${x.vang}</span>` : `<span class="badge" style="background:#f1f5f9;color:#64748b">Vắng ${x.vang}</span>`}</div>`).join('') || '<div class="empty">Không có buổi vắng nào</div>'}</div>`;
 }
 
 /* ================= CÀI ĐẶT ================= */
@@ -752,6 +764,16 @@ function renderQ(inp) { clearTimeout(_qt); _qt = setTimeout(() => { const v = in
 function wireHocVien() {}
 function openStu(maHV) {
   const h = hvOf(maHV), c = clsOf(h.maLop);
+  const _hist6 = []; for (let i = 5; i >= 0; i--) _hist6.push(addMonths(curYM(), -i));
+  const _arows = _hist6.map(ym => {
+    const recs = D.diemDanh.filter(d => d.maHV === maHV && (d.ngay || '').slice(0, 7) === ym);
+    const co = recs.filter(d => d.trangThai === 'Có mặt').length;
+    const vang = recs.filter(d => d.trangThai === 'Vắng mặt').length;
+    return { ym, n: recs.length, co, vang, warn: vang > 2 };
+  });
+  const _warnM = _arows.filter(r => r.warn);
+  const warnBox = _warnM.length ? `<div class="warnbox">⚠ Vắng quá 2 buổi/tháng: ${_warnM.map(r => monthName(r.ym) + ' (vắng ' + r.vang + ')').join(', ')}</div>` : '';
+  const arows = _arows.map(r => `<div class="hrow"><span>${monthName(r.ym)}</span><span>${r.n ? r.co + '/' + r.n + ' có mặt' : '—'}</span>${r.warn ? `<span class="badge b-chua">⚠ Vắng ${r.vang}</span>` : `<span class="badge" style="background:#f1f5f9;color:#64748b">Vắng ${r.vang}</span>`}</div>`).join('');
   const hist = []; for (let i = 5; i >= 0; i--) hist.push(addMonths(curYM(), -i));
   const hrows = hist.map(ym => { const r = D.hocPhi.find(x => x.maHV === maHV && normYM(x.thang) === ym);
     const ok = r && r.trangThai === 'Đã đóng';
@@ -762,6 +784,7 @@ function openStu(maHV) {
     <div class="kv"><span>Ngày sinh</span><b>${dmy(h.ngaySinh)}</b></div>
     ${h.ghiChu?`<div class="kv"><span>Ghi chú</span><b>${esc(h.ghiChu)}</b></div>`:''}
     <div class="secttl">Lịch sử học phí</div><div class="hp-hist">${hrows}</div>
+    <div class="secttl">Lịch sử điểm danh</div>${warnBox}<div class="hp-hist">${arows}</div>
     <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Đóng</button><button class="btn" style="flex:2" onclick="editStu('${maHV}')">Sửa thông tin</button></div>`);
 }
 function addStu() {
