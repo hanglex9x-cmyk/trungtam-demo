@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Trung Tâm Dạy Thêm</title>
+<title>Sổ Lớp — Quản lý trung tâm</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation;overflow-x:hidden}
@@ -273,7 +273,7 @@ input[type=date]{min-height:48px}
 <div class="phone">
   <header class="appbar">
     <div class="hello" id="helloLine">Xin chào</div>
-    <h1 id="appTitle">Trung Tâm Dạy Thêm</h1>
+    <h1 id="appTitle">Sổ Lớp</h1>
     <div class="date" id="todayLine"></div>
     <button class="gearbtn" onclick="go('caidat')" aria-label="Cài đặt"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
@@ -282,7 +282,7 @@ input[type=date]{min-height:48px}
 </div>
 <div id="lock" class="lockscreen" hidden><div class="lock-card">
     <div class="lock-hello" id="lockHello">Xin chào</div>
-    <h2 id="lockTitle">Trung Tâm Dạy Thêm</h2>
+    <h2 id="lockTitle">Sổ Lớp</h2>
     <p>Nhập mật khẩu để mở app</p>
     <div class="pindots"><i></i><i></i><i></i><i></i></div>
     <div class="pinpad">
@@ -297,7 +297,7 @@ input[type=date]{min-height:48px}
 <div class="toast" id="toast"></div>
 <script>
 /* =====================================================================
- * App "Trung Tâm Dạy Thêm" — bản mobile 2026
+ * App "Sổ Lớp" — bản mobile 2026
  * ===================================================================== */
 const API_URL = 'https://script.google.com/macros/s/AKfycbyMIPBTncWS9QLPk_19TGCskTO15I7sUYQFZIpr25dhL2Ka30g_FjQWVR3lUAtUv0SrTg/exec';
 
@@ -580,7 +580,7 @@ function vTongQuan() {
 
 /* ================= CÀI ĐẶT ================= */
 const CFG = {
-  get ten() { try { return localStorage.getItem('tt_ten') || 'Trung Tâm Dạy Thêm'; } catch(e) { return 'Trung Tâm Dạy Thêm'; } },
+  get ten() { try { return localStorage.getItem('tt_ten') || 'Sổ Lớp'; } catch(e) { return 'Sổ Lớp'; } },
   set ten(v) { try { localStorage.setItem('tt_ten', v); } catch(e) {} },
   get pin() { try { return localStorage.getItem('tt_pin') || ''; } catch(e) { return ''; } },
   set pin(v) { try { if (v) localStorage.setItem('tt_pin', v); else localStorage.removeItem('tt_pin'); } catch(e) {} },

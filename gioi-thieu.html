@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sổ Lớp — App quản lý trung tâm / lớp học · Dùng thử 7 ngày miễn phí</title>
+<meta name="description" content="Điểm danh, thu chi, lịch học, hồ sơ học viên — gọn trong 1 app trên điện thoại. Làm trên Google Sheet: miễn phí, không phí duy trì, dữ liệu nằm trong tài khoản Google của anh chị.">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#FFF7ED; --card:#FFFFFF; --ink:#1C1917; --muted:#78716C;
+    --brand:#EA580C; --brand-deep:#C2410C; --brand-soft:#FFEDD5;
+    --green:#15803D; --green-soft:#DCFCE7; --amber:#F59E0B;
+    --radius:18px; --shadow:0 6px 24px rgba(234,88,12,.12);
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:0 18px 110px}
+  header.hero{text-align:center;padding:34px 0 10px}
+  .eyebrow{display:inline-block;background:var(--brand-soft);color:var(--brand-deep);
+    font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;margin-bottom:14px}
+  h1{font-size:27px;line-height:1.35;font-weight:800;margin-bottom:12px}
+  h1 .hl{color:var(--brand)}
+  .sub{color:var(--muted);font-size:15.5px;margin-bottom:20px}
+  .cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+  .btn{display:inline-block;text-decoration:none;font-weight:800;font-size:16px;
+    padding:14px 22px;border-radius:14px;transition:transform .12s}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;box-shadow:var(--shadow)}
+  .btn-ghost{background:#fff;color:var(--brand-deep);border:2px solid var(--brand)}
+  .hero-img{width:100%;border-radius:var(--radius);box-shadow:var(--shadow);margin:14px 0 6px;display:block}
+  .note-small{font-size:12.5px;color:var(--muted);text-align:center}
+  section{margin-top:38px}
+  h2{font-size:21px;font-weight:800;margin-bottom:6px;text-align:center}
+  .sec-sub{text-align:center;color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .cards{display:grid;gap:12px}
+  .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .card .ico{font-size:26px;margin-bottom:6px}
+  .card h3{font-size:16px;margin-bottom:4px}
+  .card p{font-size:14px;color:var(--muted)}
+  .pain{border-left:5px solid var(--amber)}
+  .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .feat{background:var(--card);border-radius:14px;padding:14px 12px;box-shadow:var(--shadow);font-size:13.5px}
+  .feat b{display:block;font-size:14.5px;margin-bottom:2px}
+  .feat .ico{font-size:22px}
+  .steps{counter-reset:st;display:grid;gap:10px}
+  .step{background:var(--card);border-radius:14px;padding:14px 14px 14px 54px;position:relative;box-shadow:var(--shadow);font-size:14.5px}
+  .step::before{counter-increment:st;content:counter(st);position:absolute;left:14px;top:14px;
+    width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .price-grid{display:grid;gap:12px}
+  .price{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative}
+  .price.hot{border:2.5px solid var(--brand)}
+  .price .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    background:var(--brand);color:#fff;font-size:12px;font-weight:800;padding:4px 14px;border-radius:999px;white-space:nowrap}
+  .price h3{font-size:17px}
+  .price .amount{font-size:26px;font-weight:800;color:var(--brand-deep);margin:6px 0}
+  .price .amount small{font-size:13px;color:var(--muted);font-weight:400}
+  .price ul{list-style:none;margin:10px 0;font-size:14px;color:var(--muted)}
+  .price ul li{padding:4px 0 4px 26px;position:relative}
+  .price ul li::before{content:"✓";position:absolute;left:4px;color:var(--green);font-weight:800}
+  .promo{background:var(--green-soft);border:1.5px dashed var(--green);border-radius:14px;
+    padding:14px;text-align:center;font-size:14.5px;margin-top:14px}
+  .promo b{color:var(--green)}
+  .faq details{background:var(--card);border-radius:12px;padding:13px 15px;margin-bottom:8px;box-shadow:var(--shadow);font-size:14.5px}
+  .faq summary{font-weight:700;cursor:pointer}
+  .faq p{color:var(--muted);margin-top:6px;font-size:14px}
+  .trust{background:var(--brand-soft);border-radius:var(--radius);padding:18px;font-size:14.5px}
+  .trust b{color:var(--brand-deep)}
+  .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:rgba(255,255,255,.96);backdrop-filter:blur(6px);
+    border-top:1px solid #FED7AA;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    display:flex;gap:10px;max-width:640px;margin:0 auto}
+  .sticky-cta .btn{flex:1;text-align:center;font-size:15px;padding:13px 8px}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px}
+  footer a{color:var(--brand-deep)}
+  @media(min-width:560px){ .feat-grid{grid-template-columns:1fr 1fr} h1{font-size:31px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">📒 Sổ Lớp — quản lý lớp học nhẹ như lật sổ</span>
+    <h1>Quản lý cả trung tâm chỉ bằng <span class="hl">1 chiếc điện thoại</span> — anh chị thử chưa?</h1>
+    <p class="sub">Điểm danh, thu chi, lịch học, hồ sơ học viên — gọn trong 1 app, mở điện thoại là thấy.<br>
+    Làm trên Google Sheet nên <b>không mất phí duy trì</b>, dữ liệu nằm trong tài khoản Google của anh chị.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://zalo.me/0707890005">🎁 Dùng thử 7 ngày miễn phí</a>
+      <a class="btn btn-ghost" href="https://hanglex9x-cmyk.github.io/trungtam-demo/">👀 Xem app demo</a>
+    </div>
+    <img class="hero-img" src="img/hero-phones.webp" alt="App quản lý trung tâm trên điện thoại: Tổng quan, Điểm danh, Học phí, Lịch học">
+    <p class="note-small">Ảnh minh họa các màn hình chính của app</p>
+  </header>
+
+  <section>
+    <h2>Mấy việc này có quen không anh chị?</h2>
+    <p class="sec-sub">Không phải chê cách làm cũ — chỉ là có cách đỡ cực hơn.</p>
+    <div class="cards">
+      <div class="card pain"><div class="ico">📒</div><h3>Cuối tháng chốt thu chi mất cả buổi tối</h3>
+        <p>Ngồi cộng sổ, đối chiếu từng khoản, vẫn sợ sót 1-2 em chưa đóng.</p></div>
+      <div class="card pain"><div class="ico">🔍</div><h3>Sổ điểm danh để đâu không nhớ</h3>
+        <p>Phụ huynh hỏi con đi học đủ không, lại lục Zalo tìm tin nhắn cũ.</p></div>
+      <div class="card pain"><div class="ico">😟</div><h3>Học viên nghỉ mấy buổi liền mà không để ý</h3>
+        <p>Tới lúc phụ huynh hỏi mới biết — vừa áy náy vừa khó ăn nói.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>App làm được gì</h2>
+    <p class="sec-sub">Mở link trên điện thoại là dùng ngay, không cần cài đặt.</p>
+    <div class="feat-grid">
+      <div class="feat"><div class="ico">✅</div><b>Điểm danh 1 chạm</b>Chạm tên là xong, tự lưu lịch sử từng buổi.</div>
+      <div class="feat"><div class="ico">💰</div><b>Thu chi rõ ràng</b>Ai đóng / ai còn nợ nhìn 1 bảng là biết, không lo thất thoát.</div>
+      <div class="feat"><div class="ico">🗓️</div><b>Lịch học cả tuần</b>Xếp 1 lần, cả trung tâm cùng xem, có banner nhắc lịch ngày mai.</div>
+      <div class="feat"><div class="ico">👥</div><b>Hồ sơ học viên</b>Thêm / sửa / tìm trong vài giây, lưu lịch sử học phí từng em.</div>
+      <div class="feat"><div class="ico">⚠️</div><b>Cảnh báo nghỉ học</b>Tự báo học viên nghỉ &gt; 2 buổi + top vắng nhiều nhất.</div>
+      <div class="feat"><div class="ico">📊</div><b>Báo cáo doanh thu</b>Biểu đồ 6 tháng, tổng quan mỗi ngày mở app là thấy.</div>
+      <div class="feat"><div class="ico">💬</div><b>Gửi tin cho phụ huynh</b>Nhắc học phí, báo kết quả, thông báo lịch — mẫu soạn sẵn, chạm 1 cái là gửi qua Zalo.</div>
+      <div class="feat"><div class="ico">📷</div><b>QR chuyển khoản riêng</b>Mỗi học viên 1 mã QR đúng số tiền + nội dung riêng, phụ huynh quét là bank, khỏi nhập tay.</div>
+      <div class="feat"><div class="ico">🧾</div><b>Phiếu thu + công nợ</b>Thu tiền xong xuất phiếu thu ngay, nợ cũ quá hạn gom riêng 1 bảng để nhắc.</div>
+      <div class="feat"><div class="ico">📝</div><b>Điểm số + nhận xét</b>Chấm điểm, ghi nhận xét, giao bài tập ngay lúc điểm danh.</div>
+      <div class="feat"><div class="ico">👩‍🏫</div><b>Chấm công + lương</b>Chấm công giáo viên theo ca dạy, cuối tháng tự tính lương.</div>
+      <div class="feat"><div class="ico">📈</div><b>Dòng tiền + lãi/lỗ</b>Thu bao nhiêu, chi bao nhiêu, lớp nào lời — nhìn 1 bảng là rõ.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🎁 Dùng thử 7 ngày — miễn phí, dữ liệu thật</h2>
+    <p class="sec-sub">Không xem demo suông — chạy thử bằng chính dữ liệu của trung tâm mình.</p>
+    <div class="steps">
+      <div class="step"><b>Nhắn Zalo cho em</b><br><span style="color:var(--muted)">Cho em biết trung tâm anh chị có mấy lớp, mấy học viên.</span></div>
+      <div class="step"><b>Em dựng app riêng + nhập dữ liệu</b><br><span style="color:var(--muted)">1–2 ngày là xong: danh sách học viên, lớp, lịch học thật của mình.</span></div>
+      <div class="step"><b>Anh chị dùng thử 7 ngày</b><br><span style="color:var(--muted)">Điểm danh, thu chi thật luôn. Không hợp thì thôi, không mất gì.</span></div>
+      <div class="step"><b>Cho em xin 1 video review ngắn</b><br><span style="color:var(--muted)">Quay bằng điện thoại là được — để em gửi các anh chị khác xem.</span></div>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://zalo.me/0707890005">💬 Nhắn Zalo đăng ký dùng thử</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bảng giá</h2>
+    <p class="sec-sub">Trả 1 lần, dùng lâu dài. Không phí duy trì hàng tháng.</p>
+    <div class="price-grid">
+      <div class="price hot">
+        <span class="tag">🌼 Tri ân Ngày Nhà giáo 20/11</span>
+        <h3>Trọn gói đầy đủ tính năng</h3>
+        <div class="amount"><s style="color:var(--muted);font-size:.6em">1.500.000đ</s> 800.000đ <small>/ trọn gói</small></div>
+        <p style="margin:2px 0 10px;color:var(--muted)">Tính ra năm đầu chỉ khoảng <b style="color:var(--ink)">2.200đ/ngày</b> — từ năm thứ 2 coi như <b style="color:var(--ink)">0đ</b>, không phí duy trì.</p>
+        <ul>
+          <li>Điểm danh + điểm số, nhận xét, bài tập — gửi kết quả về Zalo phụ huynh</li>
+          <li>Thu học phí có phiếu thu, mã QR chuyển khoản riêng từng học viên</li>
+          <li>Công nợ quá hạn rõ ràng, nhắc phụ huynh qua Zalo bằng tin soạn sẵn</li>
+          <li>Chấm công + tính lương giáo viên theo ca, dòng tiền & lãi/lỗ từng lớp</li>
+          <li>Dựng mới trong tài khoản Google của anh chị + nhập dữ liệu ban đầu</li>
+          <li>Hướng dẫn sử dụng tận tình, hỗ trợ qua Zalo</li>
+        </ul>
+      </div>
+    </div>
+    <div class="promo">🌼 <b>Tri ân Ngày Nhà giáo Việt Nam 20/11:</b> giá gốc 1.500.000đ <b>giảm còn 800.000đ</b>, áp dụng từ <b>20/10 đến hết 24/11/2026</b>. Phần mềm thuê theo ngày ngoài kia tính 4.000đ/ngày là trả hoài không dứt (1 năm = 1.460.000đ tiền thuê) — 800.000đ này chỉ bằng khoảng 200 ngày thuê của họ, mà app là của anh chị, dùng lâu dài.</div>
+  </section>
+
+  <section>
+    <h2>Bàn giao thế nào?</h2>
+    <p class="sec-sub">Không dùng chung với ai — app là của riêng trung tâm mình.</p>
+    <div class="steps">
+      <div class="step"><b>Dựng mới từ đầu trong tài khoản Google của anh chị</b><br><span style="color:var(--muted)">Google Sheet + Apps Script — của anh chị, trong tay anh chị.</span></div>
+      <div class="step"><b>Nhập dữ liệu hiện tại vào</b><br><span style="color:var(--muted)">Danh sách học viên, lớp, lịch học, khoản thu — em làm giúp.</span></div>
+      <div class="step"><b>Hướng dẫn + đồng hành</b><br><span style="color:var(--muted)">Video hướng dẫn chi tiết, vướng đâu nhắn Zalo em hỗ trợ.</span></div>
+    </div>
+    <div style="margin-top:14px" class="trust">
+      🔒 <b>Cam kết:</b> app chạy trên Google Sheet + Apps Script — <b>miễn phí 100%</b>, không phí duy trì hàng tháng, dữ liệu nằm trong tài khoản Google của anh chị, dùng lâu dài.
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Hỏi nhanh đáp gọn</h2>
+    <p class="sec-sub"></p>
+    <details><summary>Em không rành công nghệ, có dùng được không?</summary>
+      <p>Dùng được ạ. Mở link trên điện thoại là chạy, không cần cài app. Em hướng dẫn 1 buổi là quen — thao tác toàn chạm 1-2 cái.</p></details>
+    <details><summary>Sau này có phát sinh phí gì không?</summary>
+      <p>Không ạ. App chạy trên tài khoản Google của anh chị, Google không thu phí cho mức dùng này. Trả 1 lần lúc làm là xong.</p></details>
+    <details><summary>Dữ liệu học viên của ai?</summary>
+      <p>Của anh chị 100% — nằm trong Google Sheet của chính anh chị. Em không giữ, không xem được sau khi bàn giao.</p></details>
+    <details><summary>Trung tâm em chỉ có 1 người dạy, có hợp không?</summary>
+      <p>Hợp ạ. App có chế độ gọn cho trung tâm 1 người dạy — không rườm rà phân quyền giáo viên.</p></details>
+  </section>
+
+  <footer>
+    <p>📱 App demo: <a href="https://hanglex9x-cmyk.github.io/trungtam-demo/">hanglex9x-cmyk.github.io/trungtam-demo</a></p>
+    <p style="margin-top:6px">Muốn chạy thử bằng dữ liệu thật thì bấm nút Zalo bên dưới để đăng ký 7 ngày miễn phí nhé anh chị.</p>
+  </footer>
+</div>
+
+<div class="sticky-cta">
+  <a class="btn btn-primary" href="https://zalo.me/0707890005">💬 Zalo: Dùng thử 7 ngày miễn phí</a>
+</div>
+</body>
+</html>
