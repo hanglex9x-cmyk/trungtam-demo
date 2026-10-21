@@ -164,7 +164,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .modal-box h3{font-size:17px;margin-bottom:14px}
 .modal-box .grab{width:44px;height:5px;border-radius:99px;background:#e4e0f2;margin:0 auto 14px}
 label{font-size:13px;color:var(--muted);display:block;margin:10px 0 5px;font-weight:600}
-input,select{border:1.5px solid #e7e3f4;border-radius:13px;padding:11px 12px;font-size:16px;width:100%;background:#faf9fd;color:var(--ink);outline:none}
+input,select,textarea{border:1.5px solid #e7e3f4;border-radius:13px;padding:11px 12px;font-size:16px;width:100%;background:#faf9fd;color:var(--ink);outline:none}
+textarea{font-family:inherit;line-height:1.55;font-size:15px}
 input:focus,select:focus{border-color:var(--p2)}
 .mrow{display:flex;gap:10px;margin-top:16px}
 .mrow .btn{padding:13px}
@@ -261,6 +262,10 @@ input[type=date]{min-height:48px}
 .fc-col .blb.cur{color:var(--p1);font-weight:800}
 .baitap-box{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--sh);margin-bottom:12px}
 .baitap-box label{margin:0 0 6px}
+
+.qrwrap{text-align:center}
+.qrwrap img{width:240px;max-width:80vw;border-radius:16px;border:1.5px solid #eee6fb;background:#fff}
+.qrnote{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -580,8 +585,63 @@ const CFG = {
   get pin() { try { return localStorage.getItem('tt_pin') || ''; } catch(e) { return ''; } },
   set pin(v) { try { if (v) localStorage.setItem('tt_pin', v); else localStorage.removeItem('tt_pin'); } catch(e) {} },
   get theme() { try { return localStorage.getItem('tt_theme') || 'orange'; } catch(e) { return 'orange'; } },
-  set theme(v) { try { localStorage.setItem('tt_theme', v); } catch(e) {} }
+  set theme(v) { try { localStorage.setItem('tt_theme', v); } catch(e) {} },
+  get bank() { try { return localStorage.getItem('tt_bank') || ''; } catch(e) { return ''; } },
+  set bank(v) { try { localStorage.setItem('tt_bank', v); } catch(e) {} },
+  get stk() { try { return localStorage.getItem('tt_stk') || ''; } catch(e) { return ''; } },
+  set stk(v) { try { localStorage.setItem('tt_stk', v); } catch(e) {} },
+  get chutk() { try { return localStorage.getItem('tt_chutk') || ''; } catch(e) { return ''; } },
+  set chutk(v) { try { localStorage.setItem('tt_chutk', v); } catch(e) {} }
 };
+const BANKS = [
+  ['970436','Vietcombank'], ['970422','MB Bank'], ['970407','Techcombank'], ['970416','ACB'],
+  ['970415','VietinBank'], ['970418','BIDV'], ['970405','Agribank'], ['970432','VPBank'],
+  ['970423','TPBank'], ['970403','Sacombank'], ['970437','HDBank'], ['970441','VIB'],
+  ['970443','SHB'], ['970426','MSB'], ['970448','OCB'], ['970429','VietBank']
+];
+const bankName = bin => { const b = BANKS.find(x => x[0] === bin); return b ? b[1] : (bin || ''); };
+function transferContent(maHV, ym) {
+  if (!ym) return 'HP ' + maHV + ' NO CU';
+  return 'HP ' + maHV + ' T' + (+ym.slice(5, 7)) + ' ' + ym.slice(0, 4);
+}
+function qrUrl(maHV, amt, ym) {
+  return 'https://img.vietqr.io/image/' + CFG.bank + '-' + CFG.stk + '-compact2.png?amount=' + (+amt || 0) +
+    '&addInfo=' + encodeURIComponent(transferContent(maHV, ym)) + '&accountName=' + encodeURIComponent(CFG.chutk || '');
+}
+function bankConfigured() { return !!(CFG.bank && CFG.stk); }
+function showQR(maHV, amt, ym, isDebt) {
+  const h = hvOf(maHV), c = clsOf(h.maLop);
+  if (!bankConfigured()) {
+    openModal(`<h3>Chưa cài tài khoản nhận tiền</h3>
+      <div class="sub">Vào Cài đặt → mục "Tài khoản nhận học phí" → chọn ngân hàng + nhập số tài khoản, là tạo được QR cho từng học viên.</div>
+      <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Để sau</button>
+      <button class="btn" style="flex:2" onclick="closeModal();go('caidat')">Đi cài ngay</button></div>`);
+    return;
+  }
+  const nd = transferContent(maHV, isDebt ? null : ym);
+  openModal(`<h3>QR đóng ${isDebt ? 'nợ cũ' : 'học phí'}</h3>
+    <div class="qrwrap"><img src="${qrUrl(maHV, amt, isDebt ? null : ym)}" alt="VietQR">
+    <div class="kv" style="text-align:left"><span>Học viên</span><b>${esc(h.hoTen)} · ${esc(c.tenLop || '')}</b></div>
+    <div class="kv" style="text-align:left"><span>Số tiền</span><b>${money(amt)} đ</b></div>
+    <div class="kv" style="text-align:left"><span>Ngân hàng</span><b>${esc(bankName(CFG.bank))} · ${esc(CFG.stk)}</b></div>
+    <div class="kv" style="text-align:left"><span>Nội dung CK</span><b>${esc(nd)}</b></div>
+    <div class="qrnote">Phụ huynh mở app ngân hàng → quét mã này → tiền vào đúng số tiền + đúng nội dung trên. Tiền về tài khoản của anh/chị, nghe thông báo ngân hàng rồi vào app bấm "Thu" là xong.</div></div>
+    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Đóng</button>
+    <button class="btn" style="flex:2" onclick="sendQrZalo('${maHV}',${amt},'${isDebt ? '' : ym}',${isDebt ? 'true' : 'false'})">Gửi qua Zalo</button></div>
+    ${isDebt ? '' : `<button class="btn" style="width:100%;margin-top:10px;background:var(--green)" onclick="closeModal();thuHP('${maHV}')">Đã nhận tiền — Thu luôn</button>`}`);
+}
+async function sendQrZalo(maHV, amt, ym, isDebt) {
+  const h = hvOf(maHV), c = clsOf(h.maLop);
+  const phone = normPhone(h.sdt);
+  if (!phone) { toast('Chưa có SĐT phụ huynh'); return; }
+  const nd = transferContent(maHV, isDebt ? null : ym);
+  const msg = `${CFG.ten} xin gửi thông tin đóng ${isDebt ? 'số nợ cũ' : 'học phí ' + monthName(ym)} của ${h.hoTen} (lớp ${c.tenLop || ''}):\n• Số tiền: ${money(amt)} đ\n• Ngân hàng: ${bankName(CFG.bank)} · STK: ${CFG.stk} · ${CFG.chutk}\n• Nội dung chuyển khoản: ${nd}\nAnh/chị chuyển đúng nội dung giúp trung tâm dễ đối chiếu nhé. Cảm ơn anh/chị!`;
+  openCompose(maHV, 'ckqr', msg);
+}
+function saveBank() {
+  CFG.bank = $('cfgBank').value; CFG.stk = $('cfgStk').value.trim(); CFG.chutk = $('cfgChu').value.trim();
+  toast(CFG.stk ? 'Đã lưu tài khoản nhận tiền' : 'Đã xóa thông tin tài khoản');
+}
 const THEMES = [
   ['orange','Cam','linear-gradient(135deg,#ff6a00,#ff5e62)'],
   ['red','Đỏ','linear-gradient(135deg,#c92a2a,#ff6b6b)'],
@@ -638,6 +698,16 @@ function vCaiDat() {
   <div class="secttl">Thông tin trung tâm</div>
   <div class="panel"><label>Tên hiển thị trên banner</label>
     <div class="setrow"><input id="cfgTen" value="${esc(CFG.ten)}" placeholder="VD: Lớp học cô Hoa"><button class="btn" onclick="saveTen()">Lưu</button></div></div>
+  <div class="secttl">Tài khoản nhận học phí (QR chuyển khoản)</div>
+  <div class="panel"><label>Ngân hàng</label>
+    <select id="cfgBank"><option value="">— Chưa cài —</option>${BANKS.map(([bin, nm]) => `<option value="${bin}" ${CFG.bank === bin ? 'selected' : ''}>${nm}</option>`).join('')}</select>
+    <label>Số tài khoản</label><input id="cfgStk" inputmode="numeric" value="${esc(CFG.stk)}" placeholder="VD: 0123456789">
+    <label>Tên chủ tài khoản</label><input id="cfgChu" value="${esc(CFG.chutk)}" placeholder="VD: NGUYEN VAN A">
+    <div class="setrow" style="margin-top:12px"><button class="btn" onclick="saveBank()">Lưu tài khoản</button></div>
+    <div class="sub" style="margin:10px 0 0">Có STK này, mỗi học viên sẽ có 1 mã QR riêng (đúng số tiền + đúng nội dung) ở mục Học phí và Công nợ. Lưu trên máy này, giống tên trung tâm.</div></div>
+  <div class="secttl">Mẫu tin nhắn gửi phụ huynh</div>
+  <div class="panel"><div class="sub" style="margin:0 0 10px">5 mẫu tin (kết quả học, nhắc phí, xác nhận đã đóng, lịch học, bài tập) — sửa nội dung 1 lần, các lần gửi sau tự dùng mẫu mới. Trước khi gửi từng tin vẫn sửa lại được.</div>
+    <button class="btn" onclick="editTpls()">✎ Mở trình sửa mẫu tin</button></div>
   <div class="secttl" style="display:flex;justify-content:space-between;align-items:center">Học phí các lớp<button class="mini" onclick="addClass()">＋ Thêm lớp</button></div>
   <div class="panel" style="padding:4px 16px">${feeRows || '<div class="empty">Chưa có lớp</div>'}</div>
   <div class="secttl">Lịch học các lớp</div>
@@ -851,7 +921,7 @@ function vHocPhi() {
       return `<div class="frow"><div class="av">${esc(initials(h.hoTen))}</div>
       <div class="inf"><b>${esc(h.hoTen)}</b><span>${esc(clsOf(h.maLop).tenLop||'')} · nợ ${d.months.filter(m => m < curYM()).map(m => 'T' + (+m.slice(5,7))).join(', ')}</span></div>
       <div class="amt"><b style="color:var(--red)">${money(d.thangCu)} đ</b><span class="badge b-chua">Quá hạn</span></div>
-      <button class="zbtn" onclick="S.ztpl='nhacphi';sendZaloDebt('${h.maHV}')">Nhắc Zalo</button></div>`; }).join('');
+      <span style="display:flex;gap:6px"><button class="mini" onclick="showQR('${h.maHV}',${d.thangCu},'',true)">QR</button><button class="zbtn" onclick="S.ztpl='nhacphi';sendZaloDebt('${h.maHV}')">Nhắc Zalo</button></span></div>`; }).join('');
     return mnavHTML() + `
   <div class="panel" style="margin-top:0"><h3>${hic(I.receipt)}Công nợ quá hạn</h3>
     <div class="sub">Học viên còn nợ học phí các tháng trước · tổng <b style="color:var(--red)">${money(quaHan)} đ</b> · ${noCount} học viên</div></div>
@@ -870,7 +940,7 @@ function vHocPhi() {
     return `<div class="frow"><div class="av">${esc(initials(h.hoTen))}</div>
       <div class="inf"><b>${esc(h.hoTen)}</b><span>${esc(c.tenLop||'')}</span></div>
       <div class="amt"><b>${money(amt)} đ</b><span class="badge ${ok?'b-dong':'b-chua'}">${ok?'Đã đóng':'Chưa đóng'}</span></div>
-      ${ok?`<button class="mini" onclick="showReceipt('${h.maHV}','${S.month}',${amt},'${esc(r.hinhThuc||'Chuyển khoản')}','${esc(r.ngayDong||'')}')">Phiếu thu</button>`:`<button class="mini" onclick="thuHP('${h.maHV}')">Thu</button>`}</div>`; }).join('');
+      ${ok?`<button class="mini" onclick="showReceipt('${h.maHV}','${S.month}',${amt},'${esc(r.hinhThuc||'Chuyển khoản')}','${esc(r.ngayDong||'')}')">Phiếu thu</button>`:`<span style="display:flex;gap:6px"><button class="mini" onclick="showQR('${h.maHV}',${amt},'${S.month}',false)">QR</button><button class="mini" onclick="thuHP('${h.maHV}')">Thu</button></span>`}</div>`; }).join('');
   return mnavHTML() + `
   <div class="panel" style="margin-top:0"><h3>${hic(I.wallet)}${monthName(S.month)}</h3>
     <div class="sub">Đã thu <b style="color:var(--p1)">${money(thu)} đ</b> / ${money(phai)} đ · ${dong}/${D.hocVien.length} học viên${quaHan ? ` · <b style="color:var(--red)">Nợ quá hạn ${money(quaHan)} đ (${noCount} bạn)</b>` : ''}</div>
@@ -1042,34 +1112,94 @@ function lastBaiTap(maLop) {
   const list = (D.buoiHoc || []).filter(x => x.maLop === maLop && x.baiTap).sort((a, b) => b.ngay.localeCompare(a.ngay));
   return list[0] || null;
 }
+const TPL_LABELS = { ketqua: 'Kết quả buổi học', nhacphi: 'Nhắc đóng học phí', nhacphi_dong: 'Xác nhận đã đóng (cảm ơn)', lichhoc: 'Nhắc lịch học', baitap: 'Gửi bài tập' };
+const DEFAULT_TPLS = {
+  ketqua: '{trung_tam} xin thông báo kết quả buổi học {ngay} — lớp {lop}:\n• Học viên: {ten}\n• Điểm danh: {diem_danh}\n• Điểm: {diem}\n• Nhận xét: {nhan_xet}\n• Bài tập về nhà: {bai_tap}\nCảm ơn anh/chị đã đồng hành cùng trung tâm!',
+  nhacphi: '{trung_tam} xin nhắc nhẹ: học phí {thang} của {ten} (lớp {lop}) là {so_tien} đ, anh/chị sắp xếp đóng giúp trung tâm nhé.\n• Chuyển khoản: {ngan_hang} · STK {stk} · {chu_tk}\n• Nội dung: {noi_dung_ck}\nCảm ơn anh/chị!',
+  nhacphi_dong: '{trung_tam}: học phí {thang} của {ten} đã được ghi nhận {so_tien} đ. Cảm ơn anh/chị!',
+  lichhoc: '{trung_tam} xin gửi lịch học lớp {lop} của {ten}: {lich}. Anh/chị nhắc con đi học đúng giờ giúp trung tâm nhé!',
+  baitap: '{trung_tam} — bài tập về nhà lớp {lop}:\n{bai_tap}\nAnh/chị nhắc con làm bài đầy đủ giúp trung tâm. Cảm ơn anh/chị!'
+};
+const TPL_VARS_HELP = '{trung_tam} {ten} {lop} {ngay} {diem_danh} {diem} {nhan_xet} {bai_tap} {thang} {so_tien} {lich} {ngan_hang} {stk} {chu_tk} {noi_dung_ck}';
+function getTpl(k) { try { return localStorage.getItem('tt_tpl_' + k) || DEFAULT_TPLS[k]; } catch (e) { return DEFAULT_TPLS[k]; } }
+function fillTpl(tpl, vars) {
+  const lines = tpl.split('\n').filter(ln => {
+    const keys = [...ln.matchAll(/\{(\w+)\}/g)].map(m => m[1]);
+    return !keys.some(k => vars[k] === '' || vars[k] == null);
+  });
+  let out = lines.join('\n');
+  Object.keys(vars).forEach(k => { out = out.split('{' + k + '}').join(vars[k]); });
+  return out;
+}
 function buildZaloMsg(type, h) {
-  const c = clsOf(h.maLop), ten = CFG.ten;
+  const c = clsOf(h.maLop);
+  const base = { trung_tam: CFG.ten, ten: h.hoTen, lop: c.tenLop || '' };
   const ngay = S.date, dstr = dmy(ngay);
   if (type === 'ketqua') {
     const a = attOf(ngay, h.maHV), lr = learnOf(ngay, h.maHV), bt = baiTapOf(ngay, h.maLop);
-    return `${ten} xin thông báo kết quả buổi học ${dstr} — lớp ${c.tenLop || ''}:\n` +
-      `• Học viên: ${h.hoTen}\n• Điểm danh: ${a.trangThai || 'Có mặt'}` +
-      (lr.diem !== '' && lr.diem != null ? `\n• Điểm: ${lr.diem}` : '') +
-      (lr.nhanXet ? `\n• Nhận xét: ${lr.nhanXet}` : '') +
-      (bt ? `\n• Bài tập về nhà: ${bt}` : '') +
-      `\nCảm ơn anh/chị đã đồng hành cùng trung tâm!`;
+    return fillTpl(getTpl('ketqua'), Object.assign({}, base, {
+      ngay: dstr, diem_danh: a.trangThai || 'Có mặt',
+      diem: (lr.diem === '' || lr.diem == null) ? '' : String(lr.diem),
+      nhan_xet: lr.nhanXet || '', bai_tap: bt || ''
+    }));
   }
   if (type === 'nhacphi') {
     const ym = curYM();
     const r = D.hocPhi.find(x => x.maHV === h.maHV && normYM(x.thang) === ym);
     const amt = r ? +r.soTien : +c.hocPhi || 0;
     const daDong = r && r.trangThai === 'Đã đóng';
-    return daDong
-      ? `${ten}: học phí ${monthName(ym)} của ${h.hoTen} đã được ghi nhận ${money(amt)} đ. Cảm ơn anh/chị!`
-      : `${ten} xin nhắc nhẹ: học phí ${monthName(ym)} của ${h.hoTen} (lớp ${c.tenLop || ''}) là ${money(amt)} đ, anh/chị sắp xếp đóng giúp trung tâm nhé. Cảm ơn anh/chị!`;
+    if (daDong) return fillTpl(getTpl('nhacphi_dong'), Object.assign({}, base, { thang: monthName(ym), so_tien: money(amt) }));
+    return fillTpl(getTpl('nhacphi'), Object.assign({}, base, {
+      thang: monthName(ym), so_tien: money(amt),
+      ngan_hang: bankConfigured() ? bankName(CFG.bank) : '', stk: CFG.stk || '', chu_tk: CFG.chutk || '',
+      noi_dung_ck: bankConfigured() ? transferContent(h.maHV, ym) : ''
+    }));
   }
   if (type === 'lichhoc') {
     const ss = D.lichHoc.filter(l => l.maLop === h.maLop)
       .map(l => `${thuFull(l.thu)} ${normTime(l.gioBatDau)}–${normTime(l.gioKetThuc)}`).join(', ');
-    return `${ten} xin gửi lịch học lớp ${c.tenLop || ''} của ${h.hoTen}: ${ss || 'theo thông báo của trung tâm'}. Anh/chị nhắc con đi học đúng giờ giúp trung tâm nhé!`;
+    return fillTpl(getTpl('lichhoc'), Object.assign({}, base, { lich: ss || 'theo thông báo của trung tâm' }));
   }
   const lb = lastBaiTap(h.maLop);
-  return `${ten} — bài tập về nhà lớp ${c.tenLop || ''}${lb ? ' (buổi ' + dmy(lb.ngay) + ')' : ''}:\n${lb ? lb.baiTap : 'Con ôn lại bài đã học hôm nay nhé.'}\nAnh/chị nhắc con làm bài đầy đủ giúp trung tâm. Cảm ơn anh/chị!`;
+  return fillTpl(getTpl('baitap'), Object.assign({}, base, { bai_tap: lb ? lb.baiTap : 'Con ôn lại bài đã học hôm nay nhé.' }));
+}
+let _tplKey = 'ketqua';
+function openTplEditor() { _tplKey = DEFAULT_TPLS[S.ztpl] ? S.ztpl : 'ketqua'; paintTplEditor(); }
+function paintTplEditor() {
+  openModal(`<h3>Sửa mẫu tin nhắn gửi phụ huynh</h3>
+    <label>Chọn mẫu tin</label><select id="tplSel" onchange="_tplKey=this.value;paintTplEditor()">${Object.keys(DEFAULT_TPLS).map(k => `<option value="${k}" ${k === _tplKey ? 'selected' : ''}>${TPL_LABELS[k]}</option>`).join('')}</select>
+    <label>Nội dung mẫu</label><textarea id="tplText" rows="9">${esc(getTpl(_tplKey))}</textarea>
+    <div class="sub" style="margin-top:8px">Mã tự điền khi gửi: ${esc(TPL_VARS_HELP)}<br>Dòng nào chứa mã bị trống (vd chưa có điểm) sẽ tự ẩn. Mẫu lưu trên máy này.</div>
+    <div class="mrow"><button class="btn-ghost" onclick="resetTpl()">Mẫu gốc</button><button class="btn-ghost" onclick="closeModal()">Đóng</button><button class="btn" style="flex:2" onclick="saveTpl()">Lưu mẫu</button></div>`);
+}
+function saveTpl() { try { localStorage.setItem('tt_tpl_' + _tplKey, $('tplText').value); } catch (e) {} closeModal(); toast('Đã lưu mẫu tin'); render(); }
+function resetTpl() { try { localStorage.removeItem('tt_tpl_' + _tplKey); } catch (e) {} paintTplEditor(); toast('Đã khôi phục mẫu gốc'); }
+function editTpls() { go('zalo'); openTplEditor(); }
+let _compose = null;
+function openCompose(maHV, loai, msg) {
+  const h = hvOf(maHV);
+  _compose = { maHV, loai };
+  openModal(`<h3>Soạn tin gửi phụ huynh</h3>
+    <div class="sub">${esc(h.hoTen)} · ${esc(h.sdt || 'chưa có SĐT')} — nội dung dưới đây sửa thoải mái, bản này mới là bản được copy để gửi.</div>
+    <textarea id="composeText" rows="9">${esc(msg)}</textarea>
+    <div class="mrow"><button class="btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn" style="flex:2" onclick="doComposeSend()">Copy + Mở Zalo</button></div>`);
+}
+async function doComposeSend() {
+  if (!_compose) return;
+  const { maHV, loai } = _compose, h = hvOf(maHV);
+  const phone = normPhone(h.sdt);
+  if (!phone) { toast('Chưa có SĐT phụ huynh'); return; }
+  const msg = $('composeText').value;
+  await copyText(msg);
+  try {
+    if (!DEMO) await api('logSend', [{ maHV, loai, noiDung: msg }]);
+    (D.nhatKyGui = D.nhatKyGui || []).push({ thoiGian: todayStr(), maHV, loai, noiDung: msg });
+  } catch (e) {}
+  _compose = null; closeModal();
+  window.open('https://zalo.me/' + phone, '_blank');
+  toast('Đã copy tin — dán vào Zalo là gửi');
+  setTimeout(render, 500);
 }
 function sentToday(maHV, loai) {
   const td = todayStr();
@@ -1077,17 +1207,8 @@ function sentToday(maHV, loai) {
 }
 async function sendZalo(maHV) {
   const h = hvOf(maHV);
-  const phone = normPhone(h.sdt);
-  if (!phone) { toast('Học viên chưa có SĐT phụ huynh'); return; }
-  const msg = buildZaloMsg(S.ztpl, h);
-  await copyText(msg);
-  try {
-    if (!DEMO) await api('logSend', [{ maHV, loai: S.ztpl, noiDung: msg }]);
-    (D.nhatKyGui = D.nhatKyGui || []).push({ thoiGian: todayStr(), maHV, loai: S.ztpl, noiDung: msg });
-  } catch (e) {}
-  window.open('https://zalo.me/' + phone, '_blank');
-  toast('Đã copy tin nhắn — mở Zalo, dán (Paste) là gửi');
-  setTimeout(render, 600);
+  if (!normPhone(h.sdt)) { toast('Học viên chưa có SĐT phụ huynh'); return; }
+  openCompose(maHV, S.ztpl, buildZaloMsg(S.ztpl, h));
 }
 function sendZaloDebt(maHV) { S.ztpl = 'nhacphi'; sendZalo(maHV); }
 function vZalo() {
@@ -1106,7 +1227,7 @@ function vZalo() {
   <div class="panel" style="margin-top:0"><h3>${hic(I.send)}Chăm sóc phụ huynh qua Zalo cá nhân</h3>
     <div class="sub">Chọn loại tin → bấm <b>Gửi Zalo</b>: app tự soạn + copy sẵn nội dung, mở Zalo của phụ huynh — anh/chị chỉ cần <b>dán (Paste)</b> rồi gửi. Đã gửi ${sentN}/${hvs.length} phụ huynh hôm nay.</div>
     <div class="chips">${chipsT}</div>
-    <div class="secttl" style="margin-top:6px">Xem trước nội dung tin</div>
+    <div class="secttl" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">Xem trước nội dung tin<button class="mini" onclick="openTplEditor()">✎ Sửa mẫu tin</button></div>
     <div class="msgpreview">${esc(hvs[0] ? buildZaloMsg(S.ztpl, hvs[0]) : 'Chưa có học viên')}</div></div>
   <div class="secttl">Chọn lớp</div><div class="chips">${chipsC}</div>
   <div class="secttl">Phụ huynh · ${hvs.length}</div>
@@ -1323,10 +1444,7 @@ async function sendReceiptZalo() {
   const phone = normPhone(h.sdt);
   if (!phone) { toast('Chưa có SĐT phụ huynh'); return; }
   const msg = `${CFG.ten} — PHIẾU THU HỌC PHÍ\n• Học viên: ${h.hoTen} (lớp ${c.tenLop || ''})\n• Tháng: ${monthName(_lastReceipt.thang)}\n• Số tiền: ${money(_lastReceipt.amt)} đ (${_lastReceipt.how || 'Chuyển khoản'})\n• Ngày thu: ${dmy(_lastReceipt.ngayDong || todayStr())}\nTrung tâm đã nhận đủ. Cảm ơn anh/chị!`;
-  await copyText(msg);
-  try { if (!DEMO) await api('logSend', [{ maHV: h.maHV, loai: 'phieuthu', noiDung: msg }]); } catch (e) {}
-  window.open('https://zalo.me/' + phone, '_blank');
-  toast('Đã copy phiếu thu — dán vào Zalo là gửi');
+  openCompose(h.maHV, 'phieuthu', msg);
 }
 function debtByHV() {
   const map = {};
