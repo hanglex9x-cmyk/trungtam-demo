@@ -266,9 +266,47 @@ input[type=date]{min-height:48px}
 .qrwrap{text-align:center}
 .qrwrap img{width:240px;max-width:80vw;border-radius:16px;border:1.5px solid #eee6fb;background:#fff}
 .qrnote{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+/* ===== Sổ Lớp — màn hình chào (intro) ===== */
+.sl-intro{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 26px;color:#fff;overflow:hidden;transition:transform .65s cubic-bezier(.7,0,.2,1),opacity .65s;font-family:inherit}
+.sl-intro.hide{transform:translateY(-104%);opacity:.35;pointer-events:none}
+.sl-intro::before,.sl-intro::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.10)}
+.sl-intro::before{width:340px;height:340px;top:-130px;right:-110px}
+.sl-intro::after{width:260px;height:260px;bottom:-110px;left:-90px}
+.sl-g0{background:linear-gradient(160deg,#ffa94d 0%,#ff7a18 55%,#e8590c 100%)}
+.sl-g1{background:linear-gradient(160deg,#ffb35c 0%,#ff8a1e 55%,#ea580c 100%)}
+.sl-g2{background:linear-gradient(160deg,#ff9e45 0%,#f76707 60%,#d9480f 100%)}
+.sl-g3{background:linear-gradient(160deg,#e8590c 0%,#c2410c 55%,#7c2d12 100%)}
+.sl-g4{background:linear-gradient(160deg,#9a3412 0%,#7c2d12 60%,#431407 100%)}
+.sl-logo{width:104px;height:104px;background:#fff;border-radius:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 34px rgba(0,0,0,.22);animation:slPop .7s cubic-bezier(.2,1.6,.4,1) both .1s;z-index:1}
+@keyframes slPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.sl-hello{margin-top:22px;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.45);padding:4px 14px;border-radius:99px;font-size:13.5px;font-weight:700;letter-spacing:2.5px;animation:slRise .6s ease both .35s;z-index:1}
+.sl-greet{margin-top:14px;font-size:35px;font-weight:900;line-height:1.15;text-shadow:0 3px 14px rgba(0,0,0,.18);animation:slRise .6s ease both .5s;z-index:1}
+.sl-sub{margin-top:12px;font-size:15.5px;line-height:1.5;opacity:.95;max-width:290px;animation:slRise .6s ease both .68s;z-index:1}
+.sl-date{margin-top:16px;font-size:13.5px;font-weight:600;opacity:.85;animation:slRise .6s ease both .8s;z-index:1}
+@keyframes slRise{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sl-load{margin-top:32px;width:180px;z-index:1;animation:slRise .6s ease both .95s}
+.sl-load p{font-size:12.5px;opacity:.85;margin-bottom:8px}
+.sl-bar{height:6px;background:rgba(255,255,255,.3);border-radius:99px;overflow:hidden}
+.sl-bar i{display:block;height:100%;width:40%;background:#fff;border-radius:99px;animation:slSlide 1.1s ease-in-out infinite}
+@keyframes slSlide{0%{transform:translateX(-110%)}100%{transform:translateX(480px)}}
+.sl-enter{margin-top:20px;background:#fff;color:#c2410c;border:0;font-size:16px;font-weight:800;padding:13px 34px;border-radius:99px;box-shadow:0 10px 24px rgba(0,0,0,.22);cursor:pointer;animation:slRise .6s ease both 1.1s;z-index:1;font-family:inherit}
+.sl-brand{position:absolute;bottom:22px;font-size:12.5px;opacity:.85;letter-spacing:1px;z-index:1;font-weight:600}
 </style>
 </head>
 <body>
+<!-- ===== Sổ Lớp — màn hình chào ===== -->
+<div id="slIntro" class="sl-intro sl-g0">
+  <div class="sl-logo"><svg width="60" height="60" viewBox="0 0 300 380"><rect x="6" y="6" width="288" height="368" rx="34" fill="#fff4e6"/><rect x="44" y="0" width="24" height="380" fill="#ffd8b5"/><circle cx="56" cy="70" r="11" fill="#e8590c"/><circle cx="56" cy="150" r="11" fill="#e8590c"/><circle cx="56" cy="230" r="11" fill="#e8590c"/><circle cx="56" cy="310" r="11" fill="#e8590c"/><rect x="102" y="86" width="150" height="34" rx="17" fill="#e8590c"/><rect x="102" y="158" width="118" height="26" rx="13" fill="#ffb27a"/><rect x="102" y="220" width="136" height="26" rx="13" fill="#ffb27a"/><path d="M110 296 l28 28 l52 -56" stroke="#2f9e44" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="sl-hello">HELLO 👋</div>
+  <div class="sl-greet" id="slGreet">Chào buổi sáng</div>
+  <div class="sl-sub" id="slSub">Chúc anh/chị một ngày dạy thật vui!</div>
+  <div class="sl-date" id="slDate"></div>
+  <div class="sl-load"><p>Đang mở lớp học…</p><div class="sl-bar"><i></i></div></div>
+  <button class="sl-enter" id="slEnter" type="button">Vào lớp học →</button>
+  <div class="sl-brand" id="slBrand">SỔ LỚP · NHẸ NHƯ LẬT SỔ</div>
+</div>
+
 <div class="demo-tag" id="demoTag">DEMO · dữ liệu mẫu</div>
 <div class="phone">
   <header class="appbar">
@@ -1472,6 +1510,32 @@ document.addEventListener('dblclick', e => e.preventDefault(), { passive: false 
   $('helloLine').textContent = (h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
   load().then(() => { applyTheme(); render(); applyTen(); if (CFG.pin) showLock(); }).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
 })();
+</script>
+
+<script>
+/* ===== Sổ Lớp — logic màn hình chào (tự chạy, không phụ thuộc dữ liệu) ===== */
+(function(){try{
+  var M=[[5,11,'sl-g0','Chào buổi sáng','Ngày mới bắt đầu — chúc anh/chị một buổi dạy thật vui và nhiều năng lượng!'],
+         [11,14,'sl-g1','Chào buổi trưa','Nghỉ ngơi một chút, nạp thêm năng lượng rồi mình tiếp tục nhé!'],
+         [14,18,'sl-g2','Chào buổi chiều','Buổi chiều năng lượng — lớp học đang chờ anh/chị đây!'],
+         [18,23,'sl-g3','Chào buổi tối','Một ngày dạy vất vả rồi — cùng Sổ Lớp tổng kết nhẹ nhàng nhé!'],
+         [0,24,'sl-g4','Khuya rồi đó','Làm việc khuya thế này, anh/chị nhớ giữ sức khỏe nhé!']];
+  var el=document.getElementById('slIntro'); if(!el) return;
+  var now=new Date(), h=now.getHours(), m=M[4];
+  for(var i=0;i<4;i++){ if(h>=M[i][0]&&h<M[i][1]){ m=M[i]; break; } }
+  el.className='sl-intro '+m[2];
+  document.getElementById('slGreet').textContent=m[3];
+  document.getElementById('slSub').textContent=m[4];
+  var days=['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+  document.getElementById('slDate').textContent=days[now.getDay()]+', '+now.toLocaleDateString('vi-VN');
+  try{ if(window.CFG&&CFG.ten){ document.getElementById('slBrand').textContent=String(CFG.ten).toUpperCase()+' · NHẸ NHƯ LẬT SỔ'; } }catch(e){}
+  var gone=false;
+  function hide(){ if(gone) return; gone=true; el.classList.add('hide'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },750); }
+  document.getElementById('slEnter').addEventListener('click',function(ev){ ev.stopPropagation(); hide(); });
+  el.addEventListener('click',hide);
+  setTimeout(hide,3000);
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },7000);
+}catch(e){ var n=document.getElementById('slIntro'); if(n&&n.parentNode) n.parentNode.removeChild(n); }})();
 </script>
 </body>
 </html>
