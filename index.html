@@ -45,7 +45,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-s
 .phone{width:100%;max-width:430px;min-height:100dvh;background:var(--bg);position:relative;overflow:clip;flex:none;align-self:flex-start}
 @media(min-width:480px){.phone{margin:0;box-shadow:0 0 60px var(--shc)}}
 /* ===== appbar ===== */
-.appbar{background:var(--grad);color:#fff;padding:22px 18px 30px;border-radius:0 0 30px 30px;position:relative;overflow:hidden}
+.appbar{background:var(--grad);color:#fff;padding:16px 18px 20px;border-radius:0 0 30px 30px;position:relative;overflow:hidden}
 .appbar::before,.appbar::after{content:'';position:absolute;border-radius:50%;filter:blur(2px);opacity:.35}
 .appbar::before{width:170px;height:170px;background:#fff;top:-70px;right:-50px;opacity:.18}
 .appbar::after{width:110px;height:110px;background:#fde68a;bottom:-50px;left:30px;opacity:.25}
@@ -310,9 +310,7 @@ input[type=date]{min-height:48px}
 <div class="demo-tag" id="demoTag">DEMO · dữ liệu mẫu</div>
 <div class="phone">
   <header class="appbar">
-    <div class="hello" id="helloLine">Xin chào</div>
     <h1 id="appTitle">Sổ Lớp</h1>
-    <div class="date" id="todayLine"></div>
     <button class="gearbtn" onclick="go('caidat')" aria-label="Cài đặt"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
   <main id="view"></main>
@@ -836,7 +834,7 @@ function doPinChange() {
   CFG.pin = n; closeModal(); toast(n ? 'Đã đổi mật khẩu' : 'Đã tắt mật khẩu'); render();
 }
 let _pinBuf = '';
-function showLock() { _pinBuf = ''; paintDots(); $('lockHello').textContent = $('helloLine').textContent; $('lock').hidden = false; }
+function showLock() { _pinBuf = ''; paintDots(); const h = new Date().getHours(); $('lockHello').textContent = (h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối'); $('lock').hidden = false; }
 function paintDots() { document.querySelectorAll('.pindots i').forEach((el, i) => el.classList.toggle('on', i < _pinBuf.length)); }
 function pinPress(k) {
   if ($('lock').hidden) return;
@@ -1504,10 +1502,6 @@ function debtByHV() {
 ['gesturestart','gesturechange','gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
 document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
 (function init() {
-  const d = new Date();
-  $('todayLine').textContent = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][d.getDay()] + ', ' + pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
-  const h = d.getHours();
-  $('helloLine').textContent = (h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
   load().then(() => { applyTheme(); render(); applyTen(); if (CFG.pin) showLock(); }).catch(e => { $('view').innerHTML = '<div class="empty">Không tải được dữ liệu: ' + esc(e.message) + '</div>'; });
 })();
 </script>
